@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { registerUser, sendEmailOtp, verifyEmailOtp, checkUserExists } from '../../../services/api';
+import { registerUser, sendEmailOtp, verifyEmailOtp, checkUserExists, mergeGuestCartIntoUserCart } from '../../../services/api';
 import { useNotification } from '../../../context/NotificationContext';
 
 const Auth = () => {
@@ -129,6 +129,8 @@ const Auth = () => {
             if (mode === 'LOGIN') {
                 localStorage.setItem('user', JSON.stringify(response.user));
                 window.dispatchEvent(new Event('userUpdated')); // Update Header
+                await mergeGuestCartIntoUserCart(response.user?.UserID);
+                window.dispatchEvent(new Event('cartUpdated'));
                 showNotification("Login successful!", 'success');
                 // Use location state to redirect back if applicable
                 const from = location.state?.from || '/profile';
@@ -150,6 +152,8 @@ const Auth = () => {
             const response = await registerUser({ email, ...profile });
             localStorage.setItem('user', JSON.stringify(response.user));
             window.dispatchEvent(new Event('userUpdated')); // Update Header
+            await mergeGuestCartIntoUserCart(response.user?.UserID);
+            window.dispatchEvent(new Event('cartUpdated'));
             showNotification("Registration successful!", 'success');
             // Use location state to redirect back if applicable
             const from = location.state?.from || '/profile';

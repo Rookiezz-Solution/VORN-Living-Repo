@@ -3,12 +3,14 @@ const nodemailer = require('nodemailer');
 
 // Create Transporter using Real Credentials from .env
 // You MUST provide EMAIL_USER and EMAIL_PASS in .env for this to work
+const tlsRejectUnauthorized = String(process.env.SMTP_TLS_REJECT_UNAUTHORIZED ?? 'true').toLowerCase() !== 'false';
 const transporter = nodemailer.createTransport({
     service: 'gmail', // Standard Gmail service
     auth: {
-        user: process.env.EMAIL_USER, 
-        pass: process.env.EMAIL_PASS 
-    }
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    ...(tlsRejectUnauthorized ? {} : { tls: { rejectUnauthorized: false } })
 });
 
 const sendEmailOtp = async (req, res) => {
@@ -36,7 +38,7 @@ const sendEmailOtp = async (req, res) => {
 
         // Send Email
         const mailOptions = {
-            from: '"VornLiving Support" <no-reply@vornliving.com>',
+            from: `"VornLiving Support" <${process.env.EMAIL_USER || 'no-reply@vornliving.com'}>`,
             to: email,
             subject: 'Your VornLiving Verification Code',
             text: `Your OTP is: ${otp}. It expires in 10 minutes.`,

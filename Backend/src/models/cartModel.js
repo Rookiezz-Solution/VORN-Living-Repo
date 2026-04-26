@@ -6,18 +6,26 @@ const getCartByUserId = async (userId, guestToken) => {
     request.input('userId', userId || null);
     request.input('guestToken', guestToken || null);
 
-    let query = `SELECT * FROM Cart WHERE `;
-    if (userId) {
-        query += `UserID = @userId`;
-    } else if (guestToken) {
-        query += `GuestSessionToken = @guestToken`;
-    } else {
-        return null;
-    }
-    
     try {
-        const result = await request.query(query);
-        return result.recordset[0];
+        if (!userId && !guestToken) return null;
+
+        if (userId) {
+            const result = await request.query(`
+                SELECT TOP 1 *
+                FROM Cart
+                WHERE UserID = @userId
+                ORDER BY ISNULL(UpdatedAt, CreatedAt) DESC, CartID DESC
+            `);
+            return result.recordset[0] || null;
+        }
+
+        const result = await request.query(`
+            SELECT TOP 1 *
+            FROM Cart
+            WHERE GuestSessionToken = @guestToken AND UserID IS NULL
+            ORDER BY ISNULL(UpdatedAt, CreatedAt) DESC, CartID DESC
+        `);
+        return result.recordset[0] || null;
     } catch (err) {
         console.error("DB Error in getCartByUserId:", err);
         return null;

@@ -20,6 +20,19 @@ function loadRazorpayScript() {
     });
 }
 
+const computeCheckoutTotals = (items) => {
+    const subTotal = (Array.isArray(items) ? items : []).reduce((acc, it) => {
+        const qty = Number(it?.quantity || 0);
+        const price = Number(it?.price || 0);
+        if (!Number.isFinite(qty) || !Number.isFinite(price)) return acc;
+        return acc + (price * qty);
+    }, 0);
+    const shipping = subTotal > 100 ? 0 : 15;
+    const tax = 0;
+    const total = subTotal + shipping + tax;
+    return { subTotal, shipping, tax, total };
+};
+
 const Checkout = () => {
     const { showNotification } = useNotification();
     const navigate = useNavigate();
@@ -78,18 +91,20 @@ const Checkout = () => {
                 if (buyNowProductId) {
                     const p = await getProductById(buyNowProductId);
                     if (p) {
-                        setOrderItems([{
+                        const itemsForBuyNow = [{
                             productId: p.ProductID,
                             name: p.ProductName,
                             sku: p.SKU || 'N/A',
                             quantity: buyNowQty,
                             price: p.SalePrice || p.RegularPrice
-                        }]);
+                        }];
+                        setOrderItems(itemsForBuyNow);
+                        setTotals(computeCheckoutTotals(itemsForBuyNow));
                     } else {
                         setOrderItems([]);
                     }
                 } else {
-                    setOrderItems((cartData.items || []).map(it => ({
+                    const itemsFromCart = (cartData.items || []).map(it => ({
                         productId: it.productId,
                         name: it.name,
                         sku: it.variantSku || it.sku || 'N/A',
@@ -97,7 +112,9 @@ const Checkout = () => {
                         variantName: it.variantName || null,
                         quantity: it.quantity,
                         price: it.price
-                    })));
+                    }));
+                    setOrderItems(itemsFromCart);
+                    setTotals(cartData.totals || computeCheckoutTotals(itemsFromCart));
                 }
 
                 // Auto-select default/first address for convenience
@@ -183,7 +200,8 @@ const Checkout = () => {
         const loaded = await loadRazorpayScript();
         if (!loaded) throw new Error('Razorpay failed to load. Check your internet connection.');
 
-        const amountPaise = Math.max(1, Math.round(Number(totals.total || 0) * 100));
+        const computed = computeCheckoutTotals(orderItemsSnapshot);
+        const amountPaise = Math.max(1, Math.round(Number(computed.total || 0) * 100));
         const data = await createRazorpayOrder(amountPaise);
         if (!data?.order_id) throw new Error('Could not initiate payment. Please try again.');
 

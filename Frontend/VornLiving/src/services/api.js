@@ -375,6 +375,46 @@ export const getCart = async (userId) => {
     }
 };
 
+export const mergeGuestCartIntoUserCart = async (userId) => {
+    try {
+        if (!userId) return { merged: false, reason: 'missing_user' };
+
+        const guestToken = typeof window !== 'undefined' ? localStorage.getItem('guest_token') : null;
+        if (!guestToken) return { merged: false, reason: 'no_guest_token' };
+
+        const mergeKey = `cart_merge_done:${guestToken}:${userId}`;
+        if (typeof window !== 'undefined' && localStorage.getItem(mergeKey) === '1') {
+            return { merged: false, reason: 'already_merged' };
+        }
+
+        const guestCart = await getCart(null);
+        const guestItems = Array.isArray(guestCart?.items) ? guestCart.items : [];
+        if (!guestItems.length) {
+            if (typeof window !== 'undefined') localStorage.setItem(mergeKey, '1');
+            return { merged: false, reason: 'guest_empty' };
+        }
+
+        for (const item of guestItems) {
+            const productId = item?.productId ?? item?.ProductID ?? item?.ProductId;
+            const variantId = item?.variantId ?? item?.VariantID ?? item?.VariantId ?? null;
+            const quantity = Number(item?.quantity ?? item?.Quantity ?? 1) || 1;
+            if (!productId) continue;
+
+            await api.post('/cart/add', { userId, guestToken: null, productId, quantity, variantId });
+        }
+
+        if (typeof window !== 'undefined') {
+            localStorage.setItem(mergeKey, '1');
+            localStorage.removeItem('guest_token');
+        }
+        window.dispatchEvent(new Event('cartUpdated'));
+        return { merged: true, mergedCount: guestItems.length };
+    } catch (error) {
+        console.error("Merge guest cart error:", error);
+        return { merged: false, reason: 'error' };
+    }
+};
+
 export const addToCart = async (userId, productId, quantity, variantId) => {
     try {
         const guestToken = !userId ? getGuestToken() : null;

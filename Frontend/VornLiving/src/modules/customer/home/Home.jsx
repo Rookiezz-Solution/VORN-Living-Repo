@@ -322,10 +322,13 @@ const Home = () => {
                 data-reveal
                 className={`reveal-scale group relative overflow-hidden rounded-2xl shadow-sm border border-border min-w-[260px] md:min-w-[320px] flex-shrink-0 bg-surface transition rf-hover-lift hover:border-primary/60 ${['reveal-delay-0','reveal-delay-100','reveal-delay-200','reveal-delay-300','reveal-delay-400','reveal-delay-500'][idx % 6]}`}
               >
-                <img
-                  src={category.ImageURL || "/placeholder.png"}
+                <ProductImage
+                  src={category.ImageURL}
                   alt={category.CategoryName}
+                  category={category.CategoryName}
+                  apiOnly={true}
                   className="w-full h-64 object-cover group-hover:scale-105 transition duration-500"
+                  fallbackText={category.CategoryName}
                 />
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent"></div>
