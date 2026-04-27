@@ -16,8 +16,14 @@ const urlEncodedUpload = express.urlencoded({ limit: '50mb', extended: true });
 app.use((req, res, next) => {
     const p = req.path || '';
     const isAdminMediaUpload =
-        p.startsWith('/api/admin/products/')
-        && (p.endsWith('/images/upload') || p.endsWith('/videos/upload'));
+        (
+            p.startsWith('/api/admin/products/')
+            && (p.endsWith('/images/upload') || p.endsWith('/videos/upload'))
+        )
+        || (
+            p.startsWith('/api/admin/categories/')
+            && p.endsWith('/image/upload')
+        );
 
     if (isAdminMediaUpload) return jsonUpload(req, res, next);
     return jsonDefault(req, res, next);
@@ -25,8 +31,14 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
     const p = req.path || '';
     const isAdminMediaUpload =
-        p.startsWith('/api/admin/products/')
-        && (p.endsWith('/images/upload') || p.endsWith('/videos/upload'));
+        (
+            p.startsWith('/api/admin/products/')
+            && (p.endsWith('/images/upload') || p.endsWith('/videos/upload'))
+        )
+        || (
+            p.startsWith('/api/admin/categories/')
+            && p.endsWith('/image/upload')
+        );
 
     if (isAdminMediaUpload) return urlEncodedUpload(req, res, next);
     return urlEncodedDefault(req, res, next);
