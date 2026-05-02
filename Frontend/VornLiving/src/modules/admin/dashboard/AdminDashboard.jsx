@@ -18,6 +18,20 @@ import {
 } from '../../../services/api';
 import { formatINR } from '../../../utils/formatINR';
 
+const EmptyState = ({ title }) => {
+  return (
+    <div className="h-[240px] flex items-center justify-center">
+      <div className="text-center animate-scale-in">
+        <div className="mx-auto h-16 w-16 rounded-2xl border border-border bg-surface-2 flex items-center justify-center shadow-sm">
+          <span className="text-3xl leading-none inline-block animate-fade-in">📭</span>
+        </div>
+        <div className="mt-3 font-semibold text-secondary">{title}</div>
+        <div className="mt-1 text-sm text-secondary/70">No records found</div>
+      </div>
+    </div>
+  );
+};
+
 const AdminDashboard = () => {
   const [loading, setLoading] = React.useState(true);
   const [orders, setOrders] = React.useState([]);
@@ -117,6 +131,14 @@ const AdminDashboard = () => {
     star,
     count: reviews.filter(r => Number(r.Rating) === star).length
   }));
+  const isEmptyOrdersByDay = ordersByDay.length === 0 || ordersByDay.reduce((sum, r) => sum + Number(r.value || 0), 0) === 0;
+  const isEmptyRevenueByDay = revenueByDay.length === 0 || revenueByDay.reduce((sum, r) => sum + Number(r.value || 0), 0) === 0;
+  const isEmptyStatusCounts = statusCounts.length === 0 || statusCounts.reduce((sum, r) => sum + Number(r.value || 0), 0) === 0;
+  const isEmptyReturnsByStatus = returnsByStatus.length === 0 || returnsByStatus.reduce((sum, r) => sum + Number(r.value || 0), 0) === 0;
+  const isEmptySubs = subs.length === 0 || subsSplit.reduce((sum, r) => sum + Number(r.value || 0), 0) === 0;
+  const isEmptyPaymentSplit = orders.length === 0;
+  const isEmptyReviewDist = reviews.length === 0 || reviewDist.reduce((sum, r) => sum + Number(r.count || 0), 0) === 0;
+  const isEmptyTopProducts = topProducts.length === 0;
 
   const ordersToday = orders.filter(o => {
     const d = new Date(o.CreatedAt);
@@ -196,100 +218,124 @@ const AdminDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Orders by Day (30 days)</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={ordersByDay}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="value" name="Orders" stroke={palette.blue} strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          {isEmptyOrdersByDay ? (
+            <EmptyState title="Orders by Day" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <LineChart data={ordersByDay}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="value" name="Orders" stroke={palette.blue} strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
         </div>
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Revenue by Day (30 days)</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <AreaChart data={revenueByDay}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="day" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Area type="monotone" dataKey="value" name="Revenue" stroke={palette.green} fill={palette.green} />
-            </AreaChart>
-          </ResponsiveContainer>
+          {isEmptyRevenueByDay ? (
+            <EmptyState title="Revenue by Day" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <AreaChart data={revenueByDay}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Area type="monotone" dataKey="value" name="Revenue" stroke={palette.green} fill={palette.green} />
+              </AreaChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Order Status Split</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <PieChart>
-              <Pie data={statusCounts} dataKey="value" nameKey="name" outerRadius={90}>
-                {statusCounts.map((entry, index) => (
-                  <Cell key={index} fill={orderStatusColor(entry.name)} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {isEmptyStatusCounts ? (
+            <EmptyState title="Order Status Split" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie data={statusCounts} dataKey="value" nameKey="name" outerRadius={90}>
+                  {statusCounts.map((entry, index) => (
+                    <Cell key={index} fill={orderStatusColor(entry.name)} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Returns by Status</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={returnsByStatus}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="value" name="Requests">
-                {returnsByStatus.map((entry, index) => (
-                  <Cell key={index} fill={orderStatusColor(entry.name)} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          {isEmptyReturnsByStatus ? (
+            <EmptyState title="Returns by Status" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={returnsByStatus}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name="Requests">
+                  {returnsByStatus.map((entry, index) => (
+                    <Cell key={index} fill={orderStatusColor(entry.name)} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          )}
         </div>
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Subscribers</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <PieChart>
-              <Pie data={subsSplit} dataKey="value" nameKey="name" outerRadius={90}>
-                {subsSplit.map((entry, index) => (
-                  <Cell key={index} fill={index === 0 ? palette.green : palette.slateLight} />
-                ))}
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {isEmptySubs ? (
+            <EmptyState title="Subscribers" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie data={subsSplit} dataKey="value" nameKey="name" outerRadius={90}>
+                  {subsSplit.map((entry, index) => (
+                    <Cell key={index} fill={index === 0 ? palette.green : palette.slateLight} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-1 gap-6">
         <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-3">Payment Status Split</div>
-          <ResponsiveContainer width="100%" height={240}>
-            <PieChart>
-              <Pie
-                data={[
-                  { name: 'Paid', value: orders.filter(o => o.PaymentStatus === 'Paid').length },
-                  { name: 'Pending', value: orders.filter(o => o.PaymentStatus === 'Pending').length },
-                  { name: 'Failed', value: orders.filter(o => o.PaymentStatus === 'Failed').length },
-                ]}
-                dataKey="value" nameKey="name" outerRadius={90}
-              >
-                <Cell fill={paymentStatusColor('Paid')} />
-                <Cell fill={paymentStatusColor('Pending')} />
-                <Cell fill={paymentStatusColor('Failed')} />
-              </Pie>
-              <Tooltip />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {isEmptyPaymentSplit ? (
+            <EmptyState title="Payment Status Split" />
+          ) : (
+            <ResponsiveContainer width="100%" height={240}>
+              <PieChart>
+                <Pie
+                  data={[
+                    { name: 'Paid', value: orders.filter(o => o.PaymentStatus === 'Paid').length },
+                    { name: 'Pending', value: orders.filter(o => o.PaymentStatus === 'Pending').length },
+                    { name: 'Failed', value: orders.filter(o => o.PaymentStatus === 'Failed').length },
+                  ]}
+                  dataKey="value" nameKey="name" outerRadius={90}
+                >
+                  <Cell fill={paymentStatusColor('Paid')} />
+                  <Cell fill={paymentStatusColor('Pending')} />
+                  <Cell fill={paymentStatusColor('Failed')} />
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          )}
         </div>
         {/* <div className="rf-card p-5">
           <div className="text-sm text-gray-600 mb-2">Carrier Mix</div>
@@ -316,60 +362,68 @@ const AdminDashboard = () => {
 
       <div className="rf-card p-5">
         <div className="text-sm text-gray-600 mb-3">Review Distribution</div>
-        <ResponsiveContainer width="100%" height={240}>
-          <BarChart data={reviewDist}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="star" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="count" name="Count" fill={palette.amber} />
-          </BarChart>
-        </ResponsiveContainer>
+        {isEmptyReviewDist ? (
+          <EmptyState title="Review Distribution" />
+        ) : (
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={reviewDist}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="star" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" name="Count" fill={palette.amber} />
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
       <div className="rf-card p-5">
         <div className="text-sm text-gray-600 mb-3">Top Products (30 days)</div>
-        {(() => {
-          const shorten = (s) => {
-            if (!s) return '';
-            const max = 28;
-            return s.length > max ? s.slice(0, max - 1) + '…' : s;
-          };
-          const data = topProducts.map(p => ({
-            nameFull: p.ProductName,
-            nameShort: shorten(p.ProductName),
-            qty: Number(p.Qty || 0)
-          }));
-          const chartHeight = Math.max(360, Math.min(12, data.length) * 48 + 120);
-          return (
-            <ResponsiveContainer width="100%" height={chartHeight}>
-              <BarChart
-                data={data}
-                layout="vertical"
-                margin={{ left: 8, right: 16, top: 12, bottom: 12 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke={palette.slateLight} />
-                <XAxis type="number" tick={{ fontSize: 12 }} />
-                <YAxis
-                  type="category"
-                  dataKey="nameShort"
-                  width={180}
-                  tick={{ fontSize: 12, fill: palette.gray }}
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <Tooltip
-                  formatter={(value) => [value, 'Qty']}
-                  labelFormatter={(label, payload) =>
-                    (payload && payload[0] && payload[0].payload?.nameFull) || label
-                  }
-                />
-                <Legend />
-                <Bar dataKey="qty" name="Qty" fill={palette.blue} barSize={28} />
-              </BarChart>
-            </ResponsiveContainer>
-          );
-        })()}
+        {isEmptyTopProducts ? (
+          <EmptyState title="Top Products" />
+        ) : (
+          (() => {
+            const shorten = (s) => {
+              if (!s) return '';
+              const max = 28;
+              return s.length > max ? s.slice(0, max - 1) + '…' : s;
+            };
+            const data = topProducts.map(p => ({
+              nameFull: p.ProductName,
+              nameShort: shorten(p.ProductName),
+              qty: Number(p.Qty || 0)
+            }));
+            const chartHeight = Math.max(360, Math.min(12, data.length) * 48 + 120);
+            return (
+              <ResponsiveContainer width="100%" height={chartHeight}>
+                <BarChart
+                  data={data}
+                  layout="vertical"
+                  margin={{ left: 8, right: 16, top: 12, bottom: 12 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={palette.slateLight} />
+                  <XAxis type="number" tick={{ fontSize: 12 }} />
+                  <YAxis
+                    type="category"
+                    dataKey="nameShort"
+                    width={180}
+                    tick={{ fontSize: 12, fill: palette.gray }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <Tooltip
+                    formatter={(value) => [value, 'Qty']}
+                    labelFormatter={(label, payload) =>
+                      (payload && payload[0] && payload[0].payload?.nameFull) || label
+                    }
+                  />
+                  <Legend />
+                  <Bar dataKey="qty" name="Qty" fill={palette.blue} barSize={28} />
+                </BarChart>
+              </ResponsiveContainer>
+            );
+          })()
+        )}
       </div>
       <div className="rf-card p-5">
         <div className="text-sm text-gray-600 mb-3">Low Stock Alerts</div>

@@ -170,7 +170,10 @@ const Home = () => {
     <div className="space-y-12 pb-16">
 
       {/* HERO SECTION */}
-      <section className="relative h-[560px] w-full overflow-hidden">
+      <section
+        className="relative w-full overflow-hidden"
+        style={{ height: "calc(560px + var(--customer-header-height, 0px))" }}
+      >
 
         {heroImages.map((img, index) => (
           <img
@@ -186,7 +189,7 @@ const Home = () => {
         ))}
 
         {/* Overlay */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" style={{ paddingTop: "var(--customer-header-height, 0px)" }}>
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/10" />
           <div className="absolute inset-0 bg-hero-gradient opacity-90" />
           <div className="container mx-auto h-full flex items-center relative">

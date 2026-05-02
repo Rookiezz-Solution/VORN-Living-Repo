@@ -6,9 +6,9 @@ const Contact = () => {
     // Business info placeholders
     // NOTE: Replace these placeholders with real business data later (address, phone, email, hours)
     const BUSINESS_INFO = {
-        address: '221 Home Street, Design District, Chennai, Tamil Nadu 600040',
-        phone: '+91 98765 43210',
-        email: 'support@vornliving.com',
+        address: 'A-10 B -8 church street Mogappair East Chennai - 600037',
+        phone: '+91 98848 02620',
+        email: 'vornliving@gmail.com',
         hours: 'Mon–Sat: 10:00 AM – 7:00 PM'
     };
 
@@ -39,7 +39,7 @@ const Contact = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-primary/15 via-background to-surface" />
                 <div className="container mx-auto px-4 pt-14 pb-10 relative">
                     <div className="max-w-3xl">
-                        <div className="inline-flex items-center gap-2 bg-white/70 border border-border rounded-full px-4 py-2 text-sm text-secondary shadow-sm">
+                        <div className="inline-flex items-center gap-2 bg-surface/75 border border-border rounded-full px-4 py-2 text-sm text-secondary shadow-sm backdrop-blur">
                             <Send className="h-4 w-4 text-primary" />
                             We’re here to help
                         </div>
@@ -65,7 +65,7 @@ const Contact = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Contact Info */}
                     <div className="space-y-5">
-                        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="rf-card rf-hover-lift p-6">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <MapPin className="h-5 w-5" />
@@ -76,7 +76,7 @@ const Contact = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="rf-card rf-hover-lift p-6">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <Phone className="h-5 w-5" />
@@ -87,7 +87,7 @@ const Contact = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="rf-card rf-hover-lift p-6">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <Mail className="h-5 w-5" />
@@ -98,7 +98,7 @@ const Contact = () => {
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-white border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="rf-card rf-hover-lift p-6">
                             <div className="flex items-center gap-3">
                                 <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                     <Clock className="h-5 w-5" />
@@ -112,7 +112,7 @@ const Contact = () => {
                     </div>
 
                     {/* Contact Form */}
-                    <div className="lg:col-span-2 bg-section-gradient border border-border rounded-2xl p-8 shadow-sm">
+                    <div className="lg:col-span-2 bg-section-gradient border border-border rounded-2xl p-8 shadow-sm rf-hover-lift">
                         <h2 className="text-2xl font-bold text-secondary">Send us a message</h2>
                         <p className="text-gray-600 mt-2">Fill in the form below and we’ll get back to you soon.</p>
 

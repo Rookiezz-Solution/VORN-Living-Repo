@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
@@ -44,9 +45,46 @@ import AdminReturnDetails from './modules/admin/orders/AdminReturnDetails';
 import AdminReviewDetails from './modules/admin/marketing/AdminReviewDetails';
 import AdminProfile from './modules/admin/profile/AdminProfile';
 
+export const ThemeSync = () => {
+  useEffect(() => {
+    const root = document.documentElement;
+
+    const apply = (value) => {
+      const v = String(value || '').toLowerCase();
+      if (v === 'dark') root.classList.add('dark');
+      else root.classList.remove('dark');
+    };
+
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') {
+      apply(stored);
+    } else {
+      const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const next = prefersDark ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      apply(next);
+    }
+
+    const onThemeUpdated = () => apply(localStorage.getItem('theme'));
+    const onStorage = (e) => {
+      if (e.key === 'theme') apply(e.newValue);
+    };
+
+    window.addEventListener('themeUpdated', onThemeUpdated);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('themeUpdated', onThemeUpdated);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  return null;
+};
+
 createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <NotificationProvider>
+        <ThemeSync />
         <ScrollToTop />
         <GlobalLoader />
         <RevealObserver />

@@ -415,14 +415,35 @@ const list = async (req, res) => {
   try {
     const page = parseInt(req.query.page || '1', 10);
     const limit = parseInt(req.query.limit || '10', 10);
+    const toNumberOrNull = (v) => {
+      if (v === undefined || v === null || v === '') return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+    const toIntOrNull = (v) => {
+      if (v === undefined || v === null || v === '') return null;
+      const n = Number(v);
+      if (!Number.isFinite(n)) return null;
+      const i = Math.trunc(n);
+      return Number.isFinite(i) ? i : null;
+    };
+    let minPrice = toNumberOrNull(req.query.minPrice);
+    let maxPrice = toNumberOrNull(req.query.maxPrice);
+    if (minPrice != null && maxPrice != null && minPrice > maxPrice) {
+      const t = minPrice;
+      minPrice = maxPrice;
+      maxPrice = t;
+    }
+    const rating = toIntOrNull(req.query.rating);
     const data = await productModel.getProductsAdmin({
       page,
       limit,
       categorySlug: req.query.category,
       search: req.query.search,
       sort: req.query.sort,
-      minPrice: req.query.minPrice,
-      maxPrice: req.query.maxPrice,
+      minPrice,
+      maxPrice,
+      rating,
       material: req.query.material,
       finish: req.query.finish
     });

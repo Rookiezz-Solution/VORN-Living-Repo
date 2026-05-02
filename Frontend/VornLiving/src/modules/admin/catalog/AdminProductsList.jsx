@@ -15,13 +15,17 @@ const AdminProductsList = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
 
-  const [filters, setFilters] = useState({
+  const defaultFilters = React.useMemo(() => ({
     search: '',
     category: '',
     sort: 'name',
     minPrice: '',
-    maxPrice: ''
-  });
+    maxPrice: '',
+    rating: ''
+  }), []);
+
+  const [appliedFilters, setAppliedFilters] = useState(defaultFilters);
+  const [draftFilters, setDraftFilters] = useState(defaultFilters);
   const [categories, setCategories] = useState([]);
   const [showFilter, setShowFilter] = useState(false);
   const [sortState, setSortState] = useState({ column: 'name', direction: 'asc' });
@@ -41,20 +45,22 @@ const AdminProductsList = () => {
     loadMeta();
   }, []);
 
-  const applyFilters = React.useCallback(async (nextPage) => {
+  const loadProducts = React.useCallback(async ({ nextPage, nextFilters } = {}) => {
     const parsed = typeof nextPage === 'number' ? nextPage : parseInt(String(nextPage ?? ''), 10);
-    const effectivePage = Number.isFinite(parsed) ? parsed : page;
+    const effectivePage = Number.isFinite(parsed) ? parsed : 1;
+    const effectiveFilters = nextFilters || appliedFilters;
     setLoading(true);
     setMessage('');
     try {
       const res = await adminListProducts({
         page: effectivePage,
         limit,
-        search: filters.search || undefined,
-        category: filters.category || undefined,
-        sort: filters.sort || undefined,
-        minPrice: filters.minPrice || undefined,
-        maxPrice: filters.maxPrice || undefined
+        search: effectiveFilters.search,
+        category: effectiveFilters.category,
+        sort: effectiveFilters.sort,
+        minPrice: effectiveFilters.minPrice,
+        maxPrice: effectiveFilters.maxPrice,
+        rating: effectiveFilters.rating
       });
       const products = Array.isArray(res)
         ? res
@@ -74,29 +80,17 @@ const AdminProductsList = () => {
     } finally {
       setLoading(false);
     }
-  }, [filters, limit, page]);
+  }, [appliedFilters, limit]);
 
-  const clearFilters = async () => {
-    setFilters({ search: '', category: '', sort: 'name', minPrice: '', maxPrice: '' });
+  const clearFilters = () => {
+    setDraftFilters(defaultFilters);
+    setAppliedFilters(defaultFilters);
     setPage(1);
-    await applyFilters(1);
   };
 
   useEffect(() => {
-    applyFilters(page);
-  }, [applyFilters, page, limit]);
-
-  useEffect(() => {
-    const onFocus = () => applyFilters(page);
-    window.addEventListener('focus', onFocus);
-    const id = setInterval(() => {
-      if (document.visibilityState === 'visible') applyFilters(page);
-    }, 15000);
-    return () => {
-      window.removeEventListener('focus', onFocus);
-      clearInterval(id);
-    };
-  }, [applyFilters, page]);
+    loadProducts({ nextPage: page });
+  }, [loadProducts, page, limit]);
 
   const toggleColumnSort = (col) => {
     setSortState((prev) => {
@@ -156,7 +150,7 @@ const AdminProductsList = () => {
                   try {
                     await adminDeleteProduct(targetId);
                     window.dispatchEvent(new CustomEvent('toast:show', { detail: { type: 'success', message: 'Product deleted' } }));
-                    await applyFilters(page);
+                    await loadProducts({ nextPage: page });
                   } catch (e) {
                     window.dispatchEvent(new CustomEvent('toast:show', { detail: { type: 'error', message: e.response?.data?.message || 'Failed to delete' } }));
                   } finally {
@@ -175,12 +169,12 @@ const AdminProductsList = () => {
         <div className="flex flex-wrap items-center gap-3 justify-end">
           <div>
             <SearchField
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              value={draftFilters.search}
+              onChange={(e) => setDraftFilters({ ...draftFilters, search: e.target.value })}
               placeholder="Search by name or SKU"
-              onSearch={async () => {
+              onSearch={() => {
+                setAppliedFilters(draftFilters);
                 setPage(1);
-                await applyFilters(1);
               }}
               inputWidthClassName="w-64"
             />
@@ -188,7 +182,13 @@ const AdminProductsList = () => {
           <div className="relative">
             <button
               className="flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:bg-gray-50 transition"
-              onClick={() => setShowFilter(v => !v)}
+              onClick={() => {
+                setShowFilter((v) => {
+                  const next = !v;
+                  if (next) setDraftFilters(appliedFilters);
+                  return next;
+                });
+              }}
             >
               <FilterIcon className="h-5 w-5" />
               <span>Filter</span>
@@ -202,8 +202,8 @@ const AdminProductsList = () => {
                   <div>
                     <label className="block text-sm font-medium mb-1">Category</label>
                     <SelectDrop
-                      value={filters.category}
-                      onChange={(val) => setFilters({ ...filters, category: val })}
+                      value={draftFilters.category}
+                      onChange={(val) => setDraftFilters({ ...draftFilters, category: val })}
                       options={(categories || []).map(c => ({ value: c.CategorySlug, label: c.CategoryName }))}
                       scroll={true}
                       placeholder="All"
@@ -213,8 +213,8 @@ const AdminProductsList = () => {
                     <label className="block text-sm font-medium mb-1">Min Price</label>
                     <input
                       type="number"
-                      value={filters.minPrice}
-                      onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+                      value={draftFilters.minPrice}
+                      onChange={(e) => setDraftFilters({ ...draftFilters, minPrice: e.target.value })}
                       className="rf-input w-full"
                     />
                   </div>
@@ -222,18 +222,33 @@ const AdminProductsList = () => {
                     <label className="block text-sm font-medium mb-1">Max Price</label>
                     <input
                       type="number"
-                      value={filters.maxPrice}
-                      onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                      value={draftFilters.maxPrice}
+                      onChange={(e) => setDraftFilters({ ...draftFilters, maxPrice: e.target.value })}
                       className="rf-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Rating</label>
+                    <SelectDrop
+                      value={draftFilters.rating}
+                      onChange={(val) => setDraftFilters({ ...draftFilters, rating: val })}
+                      options={[
+                        { value: '5', label: '5 ★' },
+                        { value: '4', label: '4 ★' },
+                        { value: '3', label: '3 ★' },
+                        { value: '2', label: '2 ★' },
+                        { value: '1', label: '1 ★' }
+                      ]}
+                      placeholder="All"
                     />
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2 justify-end">
                   <button
                     className="rf-btn-primary px-4 py-2 transition"
-                    onClick={async () => {
+                    onClick={() => {
+                      setAppliedFilters(draftFilters);
                       setPage(1);
-                      await applyFilters(1);
                       setShowFilter(false);
                     }}
                   >
@@ -241,8 +256,8 @@ const AdminProductsList = () => {
                   </button>
                   <button
                     className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition"
-                    onClick={async () => {
-                      await clearFilters();
+                    onClick={() => {
+                      clearFilters();
                       setShowFilter(false);
                     }}
                   >

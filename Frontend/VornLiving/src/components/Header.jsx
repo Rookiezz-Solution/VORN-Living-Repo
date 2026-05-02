@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Heart, User, Search, Menu, X, ChevronDown, Moon, Sun } from 'lucide-react';
 import { getCategories, getCart } from '../services/api';
 
 const Header = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const headerRef = useRef(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -13,10 +14,14 @@ const Header = () => {
     const [cartCount, setCartCount] = useState(0);
     const [headerHeight, setHeaderHeight] = useState(0);
     const [isHeaderHidden, setIsHeaderHidden] = useState(false);
+    const isMenuOpenRef = useRef(false);
+    const isCategoryOpenRef = useRef(false);
+    const isHeaderHiddenRef = useRef(false);
     const lastScrollYRef = useRef(0);
     const rafRef = useRef(0);
     const downAccumRef = useRef(0);
     const upAccumRef = useRef(0);
+    const lastToggleAtRef = useRef(0);
     const [isDark, setIsDark] = useState(() => {
         const stored = localStorage.getItem('theme');
         if (stored === 'dark') return true;
@@ -26,13 +31,22 @@ const Header = () => {
     });
 
     const [user, setUser] = useState(null);
+    const isHome = location.pathname === '/';
+
+    useEffect(() => {
+        isMenuOpenRef.current = isMenuOpen;
+    }, [isMenuOpen]);
+
+    useEffect(() => {
+        isCategoryOpenRef.current = isCategoryOpen;
+    }, [isCategoryOpen]);
 
     useEffect(() => {
         const el = headerRef.current;
         if (!el) return;
 
         const update = () => {
-            const next = Math.ceil(el.getBoundingClientRect().height || 0);
+            const next = Math.round(el.offsetHeight || el.getBoundingClientRect().height || 0);
             setHeaderHeight(prev => (prev !== next ? next : prev));
         };
 
@@ -54,6 +68,18 @@ const Header = () => {
     }, []);
 
     useEffect(() => {
+        const root = document.documentElement;
+        root.style.setProperty('--customer-header-height', `${headerHeight || 0}px`);
+        return () => {
+            root.style.removeProperty('--customer-header-height');
+        };
+    }, [headerHeight]);
+
+    useEffect(() => {
+        isHeaderHiddenRef.current = isHeaderHidden;
+    }, [isHeaderHidden]);
+
+    useEffect(() => {
         lastScrollYRef.current = window.scrollY || 0;
 
         const process = () => {
@@ -63,10 +89,15 @@ const Header = () => {
             const delta = y - lastScrollYRef.current;
             lastScrollYRef.current = y;
 
+            if (Math.abs(delta) < 2) return;
+
             if (y < 24) {
                 downAccumRef.current = 0;
                 upAccumRef.current = 0;
-                setIsHeaderHidden(false);
+                if (isHeaderHiddenRef.current) {
+                    isHeaderHiddenRef.current = false;
+                    setIsHeaderHidden(false);
+                }
                 return;
             }
 
@@ -78,15 +109,27 @@ const Header = () => {
                 downAccumRef.current = 0;
             }
 
-            if (downAccumRef.current > 80) {
+            const now = (typeof performance !== 'undefined' && performance.now) ? performance.now() : Date.now();
+
+            if (downAccumRef.current > 140) {
                 downAccumRef.current = 0;
-                if (!isMenuOpen && !isCategoryOpen) setIsHeaderHidden(true);
+                if (!isMenuOpenRef.current && !isCategoryOpenRef.current) {
+                    if (!isHeaderHiddenRef.current && (now - lastToggleAtRef.current) > 240) {
+                        lastToggleAtRef.current = now;
+                        isHeaderHiddenRef.current = true;
+                        setIsHeaderHidden(true);
+                    }
+                }
                 return;
             }
 
-            if (upAccumRef.current > 40) {
+            if (upAccumRef.current > 90) {
                 upAccumRef.current = 0;
-                setIsHeaderHidden(false);
+                if (isHeaderHiddenRef.current && (now - lastToggleAtRef.current) > 200) {
+                    lastToggleAtRef.current = now;
+                    isHeaderHiddenRef.current = false;
+                    setIsHeaderHidden(false);
+                }
             }
         };
 
@@ -101,7 +144,7 @@ const Header = () => {
             if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
             rafRef.current = 0;
         };
-    }, [isMenuOpen, isCategoryOpen]);
+    }, []);
 
     useEffect(() => {
         const checkUser = () => {
@@ -155,20 +198,24 @@ const Header = () => {
         };
     }, []);
 
-    const applyTheme = (nextIsDark) => {
-        const root = document.documentElement;
-        if (nextIsDark) {
-            root.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            root.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
-        }
-    };
-
     useEffect(() => {
-        applyTheme(isDark);
-    }, [isDark]);
+        const sync = () => {
+            const stored = localStorage.getItem('theme');
+            if (stored === 'dark') setIsDark(true);
+            else if (stored === 'light') setIsDark(false);
+        };
+
+        const onStorage = (e) => {
+            if (e.key === 'theme') sync();
+        };
+
+        window.addEventListener('themeUpdated', sync);
+        window.addEventListener('storage', onStorage);
+        return () => {
+            window.removeEventListener('themeUpdated', sync);
+            window.removeEventListener('storage', onStorage);
+        };
+    }, []);
 
     const handleSearchSubmit = () => {
         const q = searchQuery.trim();
@@ -180,39 +227,46 @@ const Header = () => {
     };
 
     const toggleTheme = () => {
-        setIsDark(prev => !prev);
+        setIsDark((prev) => {
+            const next = !prev;
+            localStorage.setItem('theme', next ? 'dark' : 'light');
+            window.dispatchEvent(new Event('themeUpdated'));
+            return next;
+        });
     };
 
-    const headerBgClass = isDark
-        ? 'bg-gradient-to-b from-surface-2/95 via-surface/90 to-surface-2/85 backdrop-blur-lg'
-        : 'bg-gradient-to-b from-secondary/90 via-secondary/80 to-secondary/70 backdrop-blur-lg';
+    const headerTextClass = 'text-white';
+    const hoverPillClass = 'hover:bg-white/10';
+    const iconBtnClass = `${hoverPillClass} text-white`;
+    const pillBtnClass = `${hoverPillClass} text-white`;
+    const navItemClass = `rounded-full px-3 py-2 ${hoverPillClass} transition`;
+    const headerSurfaceClass = 'bg-black/35 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.22)]';
 
     return (
         <>
-            <div style={{ height: isHeaderHidden ? 0 : headerHeight }} />
+            <div style={{ height: isHome ? 0 : headerHeight }} />
             <header
                 ref={headerRef}
                 className={[
-                    'text-white border-b border-border shadow-sm',
-                    'fixed top-0 left-0 right-0 z-50',
-                    'transition-transform duration-300 will-change-transform',
+                    'fixed top-0 left-0 right-0 z-50 rf-header',
+                    'transition-transform duration-300 ease-out will-change-transform transform-gpu',
                     isHeaderHidden ? '-translate-y-full' : 'translate-y-0',
                 ].join(' ')}
             >
-                <div className={headerBgClass}>
-                    <div className="bg-primary/95 text-secondary py-2 text-sm">
+                <div className={[headerSurfaceClass, headerTextClass].join(' ')}>
+                    <div  style={{backgroundColor:"#bfa487"}}>
                         <div className="container mx-auto flex justify-between items-center">
-                            <p className="truncate pr-4">Free shipping on all orders over ₹100!</p>
+                            <p className="truncate pr-4 py-2 text-sm opacity-85">Welcome to Vorn Living!</p>
                             <div className="flex space-x-4">
-                                <Link to="/contact" className="link-underline">Contact Us</Link>
-                                <Link to="/about" className="link-underline">About</Link>
+                                <Link to="/contact" className={['py-2 text-sm rounded-full px-3', hoverPillClass, 'transition'].join(' ')}>Contact Us</Link>
+                                <Link to="/about" className={['py-2 text-sm rounded-full px-3', hoverPillClass, 'transition'].join(' ')}>About</Link>
                             </div>
                         </div>
                     </div>
 
                     <div className="container mx-auto py-4 flex justify-between items-center relative">
                         <Link to="/" className="flex items-center">
-                            <div className="bg-white rounded-2xl p-2 shadow-md ring-1 ring-black/10">
+                            <div className="rounded-2xl p-2 bg-white/85 ring-1 ring-white/15 shadow-sm">
                                 <img
                                     src={encodeURI('/logo/VORN LIVING FINAL LOGO-APR 6.png')}
                                     alt="Vorn Living"
@@ -227,7 +281,10 @@ const Header = () => {
                             <input
                                 type="text"
                                 placeholder="Search products..."
-                                className="w-full border border-border rounded-full py-2.5 px-4 pl-11 bg-white shadow-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition text-secondary placeholder:text-secondary/70"
+                                className={[
+                                    'w-full border rounded-full py-2.5 px-4 pl-11 shadow-sm focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/15 transition',
+                                    'border-white/15 bg-white/10 text-white placeholder:text-white/60'
+                                ].join(' ')}
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={(e) => {
@@ -237,28 +294,28 @@ const Header = () => {
                             <button
                                 type="button"
                                 onClick={handleSearchSubmit}
-                                className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary/70 h-5 w-5 hover:text-primary transition"
+                                className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 transition text-white/70 hover:text-white"
                             >
                                 <Search className="h-5 w-5" />
                             </button>
                         </div>
 
-                        <div className="flex items-center space-x-3 text-white">
+                        <div className={['flex items-center space-x-3', headerTextClass].join(' ')}>
                             {user ? (
-                                <Link to="/profile" className="flex items-center space-x-2 hover:text-white rounded-full px-3 py-2 hover:bg-white/10 transition">
+                                <Link to="/profile" className={['flex items-center space-x-2 rounded-full px-3 py-2 transition', pillBtnClass].join(' ')}>
                                     <User className="h-6 w-6" />
                                     <span className="hidden lg:inline">{user.FullName ? user.FullName.split(' ')[0] : 'Profile'}</span>
                                 </Link>
                             ) : (
-                                <Link to="/auth" className="flex items-center space-x-2 hover:text-white rounded-full px-3 py-2 hover:bg-white/10 transition">
+                                <Link to="/auth" className={['flex items-center space-x-2 rounded-full px-3 py-2 transition', pillBtnClass].join(' ')}>
                                     <User className="h-6 w-6" />
                                     <span className="hidden lg:inline">Login</span>
                                 </Link>
                             )}
-                            <Link to="/wishlist" className="relative rf-icon-btn hover:bg-white/10 text-white">
+                            <Link to="/wishlist" className={['relative rf-icon-btn', iconBtnClass].join(' ')}>
                                 <Heart className="h-6 w-6" />
                             </Link>
-                            <Link to="/cart" className="relative rf-icon-btn hover:bg-white/10 text-white">
+                            <Link to="/cart" className={['relative rf-icon-btn', iconBtnClass].join(' ')}>
                                 <ShoppingCart className="h-6 w-6" />
                                 {cartCount > 0 && (
                                     <span className="absolute -top-2 -right-2 bg-primary text-secondary text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
@@ -269,7 +326,7 @@ const Header = () => {
                             <button
                                 type="button"
                                 onClick={toggleTheme}
-                                className="rf-icon-btn hover:bg-white/10 text-white"
+                                className={['rf-icon-btn', iconBtnClass].join(' ')}
                                 aria-label={isDark ? 'Dark mode' : 'Light mode'}
                                 title={isDark ? 'Dark mode' : 'Light mode'}
                             >
@@ -277,8 +334,9 @@ const Header = () => {
                             </button>
 
                             <button
-                                className="md:hidden rf-icon-btn hover:bg-white/10 text-white"
+                                className={['md:hidden rf-icon-btn', iconBtnClass].join(' ')}
                                 onClick={() => {
+                                    isHeaderHiddenRef.current = false;
                                     setIsHeaderHidden(false);
                                     setIsMenuOpen(!isMenuOpen);
                                 }}
@@ -288,19 +346,24 @@ const Header = () => {
                         </div>
                     </div>
 
-                    <nav className="hidden md:block text-white border-t border-border/40">
+                    <nav className={['hidden md:block border-t border-white/10', headerTextClass].join(' ')}>
                         <div className="container mx-auto flex gap-8 py-3 font-medium items-center">
-                            <Link to="/" className="hover:text-primary transition link-underline">Home</Link>
-                            <Link to="/shop" className="hover:text-primary transition link-underline">Shop</Link>
+                            <Link to="/" className={navItemClass}>Home</Link>
+                            <Link to="/shop" className={navItemClass}>Shop</Link>
 
-                            <div className="relative group">
+                            <div
+                                className="relative group"
+                                onMouseLeave={() => setIsCategoryOpen(false)}
+                            >
                                 <button
-                                    className="flex items-center hover:text-primary transition focus:outline-none"
+                                    className={['flex items-center focus:outline-none', navItemClass].join(' ')}
                                     onMouseEnter={() => {
+                                        isHeaderHiddenRef.current = false;
                                         setIsHeaderHidden(false);
                                         setIsCategoryOpen(true);
                                     }}
                                     onClick={() => {
+                                        isHeaderHiddenRef.current = false;
                                         setIsHeaderHidden(false);
                                         setIsCategoryOpen(!isCategoryOpen);
                                     }}
@@ -309,13 +372,13 @@ const Header = () => {
                                 </button>
 
                                 <div
-                                    className="absolute left-0 mt-3 w-64 bg-white text-secondary shadow-xl rounded-xl overflow-hidden z-50 transition-all duration-300 origin-top transform scale-y-0 group-hover:scale-y-100 max-h-60 overflow-y-auto border border-border"
+                                    className="absolute left-0 mt-3 w-64 bg-black/45 backdrop-blur-2xl text-white shadow-xl rounded-xl overflow-hidden z-50 transition-all duration-300 origin-top transform scale-y-0 group-hover:scale-y-100 max-h-60 overflow-y-auto border border-white/10"
                                 >
                                     {categories.map((category) => (
                                         <Link
                                             key={category.CategoryID}
                                             to={`/category/${category.CategorySlug}`}
-                                            className="block px-4 py-2.5 hover:bg-surface hover:text-primary transition"
+                                            className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition"
                                         >
                                             {category.CategoryName}
                                         </Link>
@@ -323,23 +386,24 @@ const Header = () => {
                                 </div>
                             </div>
 
-                            <Link to="/contact" className="hover:text-primary transition link-underline">Contact</Link>
+                            <Link to="/contact" className={navItemClass}>Contact</Link>
                         </div>
                     </nav>
 
                     {isMenuOpen && (
-                        <div className="md:hidden bg-white border-t border-border p-4 absolute w-full shadow-lg z-50 text-secondary">
+                        <div className="md:hidden bg-black/55 backdrop-blur-2xl border-t border-white/10 p-4 absolute w-full shadow-lg z-50 text-white">
                             <div className="flex flex-col space-y-4">
-                                <Link to="/" className="text-secondary hover:text-primary" onClick={() => setIsMenuOpen(false)}>Home</Link>
-                                <Link to="/shop" className="text-secondary hover:text-primary" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+                                <Link to="/" className="rounded-full px-3 py-2 hover:bg-black/10 transition" onClick={() => setIsMenuOpen(false)}>Home</Link>
+                                <Link to="/shop" className="rounded-full px-3 py-2 hover:bg-black/10 transition" onClick={() => setIsMenuOpen(false)}>Shop</Link>
 
                                 <div>
                                     <button
                                         onClick={() => {
+                                            isHeaderHiddenRef.current = false;
                                             setIsHeaderHidden(false);
                                             setIsCategoryOpen(!isCategoryOpen);
                                         }}
-                                        className="flex items-center justify-between w-full text-secondary hover:text-primary"
+                                        className="flex items-center justify-between w-full rounded-full px-3 py-2 hover:bg-white/10 transition"
                                     >
                                         Categories <ChevronDown className={`h-4 w-4 ml-1 transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
                                     </button>
@@ -349,7 +413,7 @@ const Header = () => {
                                                 <Link
                                                     key={category.CategoryID}
                                                     to={`/category/${category.CategorySlug}`}
-                                                    className="block text-sm text-gray-600 hover:text-primary"
+                                                    className="block text-sm text-white/90 hover:bg-white/10 rounded-lg px-2 py-1 transition"
                                                     onClick={() => setIsMenuOpen(false)}
                                                 >
                                                     {category.CategoryName}
@@ -359,7 +423,7 @@ const Header = () => {
                                     )}
                                 </div>
 
-                                <Link to="/contact" className="text-secondary hover:text-primary" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+                                <Link to="/contact" className="rounded-full px-3 py-2 hover:bg-white/10 transition" onClick={() => setIsMenuOpen(false)}>Contact</Link>
                             </div>
                         </div>
                     )}

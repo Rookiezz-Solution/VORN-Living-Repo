@@ -400,9 +400,9 @@ const ProductListing = () => {
                 {isLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {Array.from({ length: 6 }).map((_, idx) => (
-                            <div key={idx} className="bg-section-gradient rounded-2xl border border-border shadow-sm overflow-hidden animate-scale-in">
-                                <div className="h-64 bg-gray-100 animate-pulse" />
-                                <div className="p-5 space-y-3">
+                            <div key={idx} className="rf-card overflow-hidden animate-scale-in">
+                                <div className="h-48 bg-gray-100 animate-pulse" />
+                                <div className="p-4 space-y-2.5">
                                     <div className="h-4 w-24 bg-gray-100 animate-pulse rounded" />
                                     <div className="h-5 w-4/5 bg-gray-100 animate-pulse rounded" />
                                     <div className="h-5 w-32 bg-gray-100 animate-pulse rounded" />
@@ -416,7 +416,7 @@ const ProductListing = () => {
                             <div 
                                 key={product.ProductID} 
                                 data-tilt 
-                                className="rounded-2xl border border-border bg-white shadow-sm transition overflow-hidden group rf-hover-lift rf-tilt-3d hover:border-primary/50"
+                                className="rf-card overflow-hidden group rf-hover-lift rf-tilt-3d"
                             >
                                 <div className="relative">
                                     <button type="button" className="block w-full text-left" onClick={() => setQuickView(product)}>
@@ -425,7 +425,7 @@ const ProductListing = () => {
                                             alt={product.ProductName}
                                             category={product.CategoryName}
                                             apiOnly={true}
-                                            className="w-full aspect-[4/5] object-cover transition duration-500 group-hover:scale-[1.02]"
+                                            className="w-full aspect-[4/3] object-cover transition duration-500 group-hover:scale-[1.015]"
                                             fallbackText={product.ProductName}
                                         />
                                     </button>
@@ -461,11 +461,11 @@ const ProductListing = () => {
                                     </div>
                                 </div>
                                 
-                                <div className="p-4">
+                                <div className="p-3">
                                     <div className="text-xs text-secondary/70 mb-1 truncate">
                                         {product.CategoryName}
                                     </div>
-                                    <Link to={`/product/${product.ProductID}${searchParams.get('replaceFor') ? `?replaceFor=${encodeURIComponent(searchParams.get('replaceFor'))}` : ''}`} className="block text-sm font-semibold text-secondary hover:text-primary transition line-clamp-2 min-h-[2.5rem]">
+                                    <Link to={`/product/${product.ProductID}${searchParams.get('replaceFor') ? `?replaceFor=${encodeURIComponent(searchParams.get('replaceFor'))}` : ''}`} className="block text-sm font-semibold text-secondary hover:text-primary transition line-clamp-2 min-h-[2.25rem]">
                                         {product.ProductName}
                                     </Link>
                                     <div className="flex items-center mt-2 space-x-2">

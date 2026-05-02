@@ -61,9 +61,11 @@ const AdminLogin = () => {
           </div>
 
           {message && (
-            <div className="mt-5 text-sm text-secondary bg-white/70 border border-border rounded-xl px-4 py-3">
-              {message}
-            </div>
+            <div className="mt-5 px-4 py-3 rounded-xl bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-md animate-fadeIn">
+  <p className="text-sm text-white/90 font-medium tracking-wide text-center">
+    {message}
+  </p>
+</div>
           )}
         {step === 1 && (
           <div className="mt-6 space-y-4">

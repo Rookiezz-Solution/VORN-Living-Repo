@@ -73,7 +73,7 @@ const About = () => {
 
                 <div className="container mx-auto px-4 pt-14 pb-10 relative">
                     <div className="max-w-4xl">
-                        <div className="inline-flex items-center gap-2 bg-white/70 border border-border rounded-full px-4 py-2 text-sm text-secondary shadow-sm">
+                        <div className="inline-flex items-center gap-2 bg-surface/75 border border-border rounded-full px-4 py-2 text-sm text-secondary shadow-sm backdrop-blur">
                             <Star className="h-4 w-4 text-yellow-500 fill-current" />
                             Crafted for modern homes • Loved by everyday shoppers
                         </div>
@@ -103,17 +103,17 @@ const About = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-10">
-                        <div className="bg-white/80 border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="bg-surface/85 border border-border rounded-2xl p-6 shadow-sm backdrop-blur rf-hover-lift">
                             <div className="text-sm text-gray-500">What we sell</div>
                             <div className="text-xl font-bold text-secondary mt-1">Utility + Decor</div>
                             <div className="text-gray-600 mt-2">Compact racks, shelves, organizers, stands, and more.</div>
                         </div>
-                        <div className="bg-white/80 border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="bg-surface/85 border border-border rounded-2xl p-6 shadow-sm backdrop-blur rf-hover-lift">
                             <div className="text-sm text-gray-500">Who it’s for</div>
                             <div className="text-xl font-bold text-secondary mt-1">Every Home</div>
                             <div className="text-gray-600 mt-2">Small spaces, families, rentals, and anyone who loves tidy living.</div>
                         </div>
-                        <div className="bg-white/80 border border-border rounded-2xl p-6 shadow-sm">
+                        <div className="bg-surface/85 border border-border rounded-2xl p-6 shadow-sm backdrop-blur rf-hover-lift">
                             <div className="text-sm text-gray-500">Our promise</div>
                             <div className="text-xl font-bold text-secondary mt-1">Quality + Support</div>
                             <div className="text-gray-600 mt-2">Thoughtful products backed by responsive customer service.</div>
@@ -124,7 +124,7 @@ const About = () => {
 
             <section className="container mx-auto px-4 py-14">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-                    <div className="bg-section-gradient border border-border rounded-2xl p-8 shadow-sm">
+                    <div className="bg-section-gradient border border-border rounded-2xl p-8 shadow-sm rf-hover-lift">
                         <h2 className="text-3xl font-bold text-secondary">Our Story</h2>
                         <p className="text-gray-600 mt-4 leading-relaxed">
                             We started with a simple idea: most homes don’t need bigger furniture—they need smarter solutions. From bathroom racks that
@@ -136,11 +136,11 @@ const About = () => {
                         </p>
                     </div>
 
-                    <div className="bg-white border border-border rounded-2xl p-8 shadow-sm">
+                    <div className="bg-surface border border-border rounded-2xl p-8 shadow-sm rf-hover-lift">
                         <h3 className="text-2xl font-bold text-secondary">What we stand for</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
                             {values.map((v, idx) => (
-                                <div key={idx} className="rounded-2xl border border-gray-100 bg-gray-50 p-5">
+                                <div key={idx} className="rounded-2xl border border-border bg-surface-2 p-5 rf-hover-lift">
                                     <div className="font-bold text-secondary">{v.title}</div>
                                     <div className="text-gray-600 text-sm mt-2 leading-relaxed">{v.description}</div>
                                 </div>
@@ -164,8 +164,8 @@ const About = () => {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
                         {categories.map((c, idx) => (
-                            <div key={idx} className="bg-white border border-border rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition">
-                                <div className="h-40 bg-gray-50">
+                            <div key={idx} className="rf-card rf-hover-lift overflow-hidden">
+                                <div className="h-40 bg-surface-2">
                                     <img src={c.image} alt={c.title} className="h-full w-full object-cover" />
                                 </div>
                                 <div className="p-5">
@@ -188,7 +188,7 @@ const About = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mt-10">
                     {highlights.map((h, idx) => (
-                        <div key={idx} className="bg-white border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition">
+                        <div key={idx} className="rf-card rf-hover-lift p-6">
                             <div className="h-12 w-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
                                 <h.icon className="h-6 w-6" />
                             </div>

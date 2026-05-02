@@ -1,4 +1,5 @@
 const { getRequest, sql } = require('../config/db');
+const { hasColumn } = require('../lib/dbSchema');
 
 const getUserByEmail = async (email) => {
     const request = getRequest();
@@ -22,14 +23,46 @@ const createUser = async (userData) => {
     const request = getRequest();
     request.input('fullName', userData.fullName);
     request.input('email', userData.email);
-    request.input('phoneNumber', userData.phoneNumber || null); // Optional now
-    request.input('userType', 'Customer'); // Default type
-    request.input('isGuest', 0); // Registered user
+
+    const [hasPhoneNumber, hasUserType, hasIsGuest, hasCreatedAt, hasUpdatedAt] = await Promise.all([
+        hasColumn('Users', 'PhoneNumber'),
+        hasColumn('Users', 'UserType'),
+        hasColumn('Users', 'IsGuest'),
+        hasColumn('Users', 'CreatedAt'),
+        hasColumn('Users', 'UpdatedAt')
+    ]);
+
+    const cols = ['FullName', 'Email'];
+    const vals = ['@fullName', '@email'];
+
+    if (hasPhoneNumber) {
+        request.input('phoneNumber', userData.phoneNumber || null);
+        cols.push('PhoneNumber');
+        vals.push('@phoneNumber');
+    }
+    if (hasUserType) {
+        request.input('userType', 'Customer');
+        cols.push('UserType');
+        vals.push('@userType');
+    }
+    if (hasIsGuest) {
+        request.input('isGuest', 0);
+        cols.push('IsGuest');
+        vals.push('@isGuest');
+    }
+    if (hasCreatedAt) {
+        cols.push('CreatedAt');
+        vals.push('GETDATE()');
+    }
+    if (hasUpdatedAt) {
+        cols.push('UpdatedAt');
+        vals.push('GETDATE()');
+    }
 
     const result = await request.query(`
-        INSERT INTO Users (FullName, Email, PhoneNumber, UserType, IsGuest, CreatedAt, UpdatedAt)
+        INSERT INTO Users (${cols.join(', ')})
         OUTPUT inserted.*
-        VALUES (@fullName, @email, @phoneNumber, @userType, @isGuest, GETDATE(), GETDATE())
+        VALUES (${vals.join(', ')})
     `);
     return result.recordset[0];
 };

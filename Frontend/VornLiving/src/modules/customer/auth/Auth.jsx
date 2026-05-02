@@ -179,7 +179,7 @@ const Auth = () => {
             <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/35 to-black/15" />
             <div className="absolute inset-0 bg-hero-gradient opacity-80" />
 
-            <div className="max-w-md w-full rf-card p-8 animate-slide-up bg-white/90 backdrop-blur-md border border-white/30 relative z-10">
+            <div className={`max-w-md w-full rf-card p-8 animate-slide-up backdrop-blur-md border border-white/30 relative z-10 bg-background'}`}>
                 <div className="text-center">
                     <h2 className="text-3xl font-bold text-secondary">
                         {step === 3 ? 'Complete Profile' : (mode === 'LOGIN' ? 'Welcome Back' : 'Create Account')}

@@ -558,16 +558,18 @@ export const adminUpdateProduct = async (id, payload) => {
 };
 
 export const adminListProducts = async (options = {}) => {
+    const present = (v) => (v === undefined || v === null || v === '') ? undefined : v;
     const params = {
         page: options.page || 1,
         limit: options.limit || 10,
-        search: options.search || undefined,
-        category: options.categorySlug || options.category || undefined,
-        sort: options.sort || undefined,
-        minPrice: options.minPrice || undefined,
-        maxPrice: options.maxPrice || undefined,
-        material: options.material || undefined,
-        finish: options.finish || undefined
+        search: present(options.search),
+        category: present(options.categorySlug ?? options.category),
+        sort: present(options.sort),
+        minPrice: present(options.minPrice),
+        maxPrice: present(options.maxPrice),
+        rating: present(options.rating),
+        material: present(options.material),
+        finish: present(options.finish)
     };
     const response = await api.get(`/admin/products`, { params });
     return response.data;

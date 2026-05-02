@@ -145,6 +145,18 @@ const getProductsAdmin = async (options = {}) => {
         const limit = normalized.limit ? parseInt(normalized.limit) : 10;
         const offset = (page - 1) * limit;
         const whereClauses = ['1=1'];
+        const minPrice =
+            normalized.minPrice !== undefined && normalized.minPrice !== null && normalized.minPrice !== ''
+                ? Number(normalized.minPrice)
+                : null;
+        const maxPrice =
+            normalized.maxPrice !== undefined && normalized.maxPrice !== null && normalized.maxPrice !== ''
+                ? Number(normalized.maxPrice)
+                : null;
+        const rating =
+            normalized.rating !== undefined && normalized.rating !== null && normalized.rating !== ''
+                ? Number(normalized.rating)
+                : null;
 
         if (categorySlug) {
             request.input('categorySlug', categorySlug);
@@ -153,6 +165,18 @@ const getProductsAdmin = async (options = {}) => {
         if (search) {
             request.input('search', `%${search}%`);
             whereClauses.push(`p.ProductName LIKE @search`);
+        }
+        if (Number.isFinite(minPrice)) {
+            request.input('minPrice', minPrice);
+            whereClauses.push(`COALESCE(p.SalePrice, p.RegularPrice) >= @minPrice`);
+        }
+        if (Number.isFinite(maxPrice)) {
+            request.input('maxPrice', maxPrice);
+            whereClauses.push(`COALESCE(p.SalePrice, p.RegularPrice) <= @maxPrice`);
+        }
+        if (Number.isFinite(rating)) {
+            request.input('rating', rating);
+            whereClauses.push(`ROUND(COALESCE((SELECT AVG(CAST(pr.Rating AS FLOAT)) FROM Product_Reviews pr WHERE pr.ProductID = p.ProductID), 0), 0) = @rating`);
         }
 
         const sortMap = {

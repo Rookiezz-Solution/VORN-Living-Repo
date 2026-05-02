@@ -114,15 +114,15 @@ const Footer = () => {
                         <ul className="space-y-3 text-white/75">
                             <li className="flex items-start gap-3">
                                 <MapPin className="h-5 w-5 mt-0.5 text-primary" />
-                                <span>123 Furniture St, Design City, NY 10012</span>
+                                <span>A-10 B -8 church street Mogappair East Chennai - 600037</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-5 w-5 text-primary" />
-                                <span>+1 (555) 123-4567</span>
+                                <span>+91 98848 02620</span>
                             </li>
                             <li className="flex items-center gap-3">
                                 <Mail className="h-5 w-5 text-primary" />
-                                <span>support@vornliving.com</span>
+                                <span>vornliving@gmail.com</span>
                             </li>
                         </ul>
                     </div>

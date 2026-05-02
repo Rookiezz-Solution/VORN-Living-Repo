@@ -43,7 +43,7 @@ const Terms = () => {
         <section>
           <h2 className="text-xl font-semibold text-secondary">Contact</h2>
           <p className="text-gray-600 mt-2">
-            For questions about these terms, contact support@vornliving.com.
+            For questions about these terms, contact vornliving@gmail.com.
           </p>
         </section>
       </div>

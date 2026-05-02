@@ -45,7 +45,7 @@ const Privacy = () => {
         <section>
           <h2 className="text-xl font-semibold text-secondary">Contact</h2>
           <p className="text-gray-600 mt-2">
-            For privacy questions, contact support@vornliving.com or visit the Contact page.
+            For privacy questions, contact vornliving@gmail.com or visit the Contact page.
           </p>
         </section>
       </div>

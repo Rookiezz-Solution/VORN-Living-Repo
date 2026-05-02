@@ -60,6 +60,49 @@
     box-shadow: 0 0 0 4px rgba(191, 164, 135, 0.22);
   }
 
+  .rf-card {
+    position: relative;
+    isolation: isolate;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(84, 90, 103, 0.10);
+    transition: box-shadow 220ms ease, border-color 220ms ease, transform 220ms ease;
+  }
+  .rf-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    box-shadow: 0 0 0 0 rgba(191, 164, 135, 0);
+    transition: opacity 220ms ease, box-shadow 220ms ease;
+    z-index: 0;
+  }
+  .rf-card:hover {
+    box-shadow: 0 12px 26px rgba(84, 90, 103, 0.14);
+    border-color: rgba(191, 164, 135, 0.55);
+  }
+  .rf-card:hover::after {
+    opacity: 1;
+    box-shadow: 0 0 0 3px rgba(191, 164, 135, 0.14);
+  }
+  .dark .rf-card {
+    background-color: var(--color-surface);
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  }
+  .dark .rf-card:hover::after {
+    box-shadow: 0 0 0 3px rgba(191, 164, 135, 0.20);
+  }
+
+  .rf-card-muted {
+    background-color: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+  }
+
   select:not(.appearance-none):not([multiple]) {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -94,6 +137,10 @@
 }
 
 @layer utilities {
+  .rf-header {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
   .dark .bg-secondary { background-color: var(--color-surface-2) !important; }
   .dark .border-secondary { border-color: rgba(255, 255, 255, 0.14) !important; }
   .dark .bg-white { background-color: var(--color-surface) !important; }
@@ -118,27 +165,6 @@
 
   .rf-page {
     background-color: var(--color-background);
-  }
-  .rf-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
-    box-shadow: 0 6px 18px rgba(84, 90, 103, 0.10);
-    transition: box-shadow 220ms ease, border-color 220ms ease, transform 220ms ease;
-  }
-  .rf-card:hover {
-    box-shadow: 0 12px 26px rgba(84, 90, 103, 0.14);
-    border-color: rgba(191, 164, 135, 0.55);
-  }
-  .dark .rf-card {
-    background-color: var(--color-surface);
-    border-color: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
-  }
-  .rf-card-muted {
-    background-color: var(--color-surface-2);
-    border: 1px solid var(--color-border);
-    border-radius: 16px;
   }
   .rf-btn-primary {
     background-color: var(--color-primary);

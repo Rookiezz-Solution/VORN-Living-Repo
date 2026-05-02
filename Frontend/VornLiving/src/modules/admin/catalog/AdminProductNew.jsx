@@ -304,7 +304,7 @@ const AdminProductNew = () => {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">New Product</h1>
+      <h1 className="text-2xl font-bold">{isEdit ? 'Update Product' : 'New Product'}</h1>
       {message && <div className="text-primary">{message}</div>}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <aside className="md:col-span-1">
@@ -807,7 +807,7 @@ const AdminProductNew = () => {
               {currentIndex < steps.length - 1 ? (
                 <button className="rf-btn-primary px-4 py-2" onClick={() => setTab(steps[currentIndex + 1])}>Next</button>
               ) : (
-                <button className="rf-btn-primary px-4 py-2" onClick={submit} disabled={loading}>{loading ? 'Saving...' : 'Create Product'}</button>
+                <button className="rf-btn-primary px-4 py-2" onClick={submit} disabled={loading}>{loading ? 'Saving...' : (isEdit ? 'Update Product' : 'Create Product')}</button>
               )}
             </div>
           </div>
