@@ -53,7 +53,7 @@ const Profile = () => {
         const checkAuth = () => {
             const storedUser = localStorage.getItem('user');
             if (!storedUser) {
-                navigate('/auth');
+                navigate('/auth', { state: { from: '/profile' } });
                 return;
             }
             setUser(JSON.parse(storedUser));

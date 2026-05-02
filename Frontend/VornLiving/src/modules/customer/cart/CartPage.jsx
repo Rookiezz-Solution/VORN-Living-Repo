@@ -165,7 +165,14 @@ const CartPage = () => {
                             </div>
                             <button 
                                 type="button"
-                                onClick={() => navigate('/checkout')}
+                                onClick={() => {
+                                    const user = localStorage.getItem('user');
+                                    if (user) {
+                                        navigate('/checkout');
+                                    } else {
+                                        navigate('/auth', { state: { from: '/checkout' } });
+                                    }
+                                }}
                                 className="w-full rf-btn-primary py-3 transition"
                             >
                                 Proceed to Checkout

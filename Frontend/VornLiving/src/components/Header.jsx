@@ -254,15 +254,7 @@ const Header = () => {
                 ].join(' ')}
             >
                 <div className={[headerSurfaceClass, headerTextClass].join(' ')}>
-                    <div  style={{backgroundColor:"#bfa487"}}>
-                        <div className="container mx-auto flex justify-between items-center">
-                            <p className="truncate pr-4 py-2 text-sm opacity-85">Welcome to Vorn Living!</p>
-                            <div className="flex space-x-4">
-                                <Link to="/contact" className={['py-2 text-sm rounded-full px-3', hoverPillClass, 'transition'].join(' ')}>Contact Us</Link>
-                                <Link to="/about" className={['py-2 text-sm rounded-full px-3', hoverPillClass, 'transition'].join(' ')}>About</Link>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <div className="container mx-auto py-4 flex justify-between items-center relative">
                         <Link to="/" className="flex items-center">

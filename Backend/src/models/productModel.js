@@ -113,7 +113,7 @@ const getProducts = async (options = {}) => {
                 c.CategoryName,
                 c.CategorySlug,
                 ${imageTop1Sql} as ImageURL,
-                (SELECT AVG(Rating) FROM Product_Reviews WHERE ProductID = p.ProductID) as Rating,
+                (SELECT AVG(CAST(Rating AS FLOAT)) FROM Product_Reviews WHERE ProductID = p.ProductID) as Rating,
                 (SELECT COUNT(*) FROM Product_Reviews WHERE ProductID = p.ProductID) as ReviewCount
             FROM Products p
             JOIN Categories c ON p.CategoryID = c.CategoryID
@@ -176,7 +176,7 @@ const getProductsAdmin = async (options = {}) => {
         }
         if (Number.isFinite(rating)) {
             request.input('rating', rating);
-            whereClauses.push(`ROUND(COALESCE((SELECT AVG(CAST(pr.Rating AS FLOAT)) FROM Product_Reviews pr WHERE pr.ProductID = p.ProductID), 0), 0) = @rating`);
+            whereClauses.push(`FLOOR(COALESCE((SELECT AVG(CAST(pr.Rating AS FLOAT)) FROM Product_Reviews pr WHERE pr.ProductID = p.ProductID), 0)) = @rating`);
         }
 
         const sortMap = {

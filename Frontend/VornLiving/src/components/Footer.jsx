@@ -136,6 +136,7 @@ const Footer = () => {
             <div className="border-t border-white/15 mt-10 pt-6">
                 <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-3 text-sm text-white/70">
                     <p>&copy; {new Date().getFullYear()} VornLiving. All rights reserved.</p>
+                    <p className="md:text-center">Designed and Developed with ❤️ by Rookiezz Solution</p>
                     <div className="flex items-center gap-5">
                         <Link to="/privacy" className="link-underline hover:text-white">Privacy</Link>
                         <Link to="/terms" className="link-underline hover:text-white">Terms</Link>

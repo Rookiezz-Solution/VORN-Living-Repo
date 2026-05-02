@@ -199,7 +199,7 @@ const ProductDetails = () => {
             const user = JSON.parse(localStorage.getItem('user'));
             if (!user) {
                 showNotification("Please login first", 'error');
-                navigate('/auth');
+                navigate('/auth', { state: { from: location.pathname + location.search } });
                 return;
             }
             if (!replaceFor) return;

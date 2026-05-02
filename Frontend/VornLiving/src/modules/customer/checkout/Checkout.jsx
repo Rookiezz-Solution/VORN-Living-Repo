@@ -62,7 +62,7 @@ const Checkout = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
             showNotification("Please login to proceed to checkout", 'error');
-            navigate('/auth'); // Redirect to login
+            navigate('/auth', { state: { from: '/checkout' } }); // Redirect to login with state
             return;
         }
 

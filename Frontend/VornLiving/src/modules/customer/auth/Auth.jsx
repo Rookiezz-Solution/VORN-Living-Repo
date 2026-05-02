@@ -273,32 +273,38 @@ const Auth = () => {
                 {step === 3 && (
                     <form className="mt-8 space-y-6" onSubmit={handleRegister}>
                         <div className="space-y-4">
-                            <div>
-                                <label htmlFor="name" className="sr-only">Full Name</label>
-                                <input
-                                    id="name"
-                                    name="name"
-                                    type="text"
-                                    required
-                                    className="rf-input w-full text-secondary placeholder:text-secondary/70"
-                                    placeholder="Full Name"
-                                    value={profile.fullName}
-                                    onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label htmlFor="phone" className="sr-only">Phone Number (Optional)</label>
-                                <input
-                                    id="phone"
-                                    name="phone"
-                                    type="tel"
-                                    className="rf-input w-full text-secondary placeholder:text-secondary/70"
-                                    placeholder="Phone Number (Optional)"
-                                    value={profile.phoneNumber}
-                                    onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
-                                />
-                            </div>
-                        </div>
+  <div>
+    <label htmlFor="name" className="block text-sm text-secondary mb-1">
+      Full Name <span className="text-red-500 ml-0.5">*</span>
+    </label>
+    <input
+      id="name"
+      name="name"
+      type="text"
+      required
+      className="rf-input w-full text-secondary placeholder:text-secondary/70"
+      placeholder="Full Name"
+      value={profile.fullName}
+      onChange={(e) => setProfile({ ...profile, fullName: e.target.value })}
+    />
+  </div>
+
+  <div>
+    <label htmlFor="phone" className="block text-sm text-secondary mb-1">
+      Phone Number <span className="text-red-500 ml-0.5">*</span>
+    </label>
+    <input
+      id="phone"
+      name="phone"
+      type="tel"
+      required
+      className="rf-input w-full text-secondary placeholder:text-secondary/70"
+      placeholder="Phone Number"
+      value={profile.phoneNumber}
+      onChange={(e) => setProfile({ ...profile, phoneNumber: e.target.value })}
+    />
+  </div>
+</div>
 
                         <button
                             type="submit"

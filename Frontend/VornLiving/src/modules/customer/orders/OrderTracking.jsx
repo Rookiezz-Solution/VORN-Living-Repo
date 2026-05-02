@@ -22,7 +22,7 @@ const OrderTracking = () => {
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user) {
       showNotification('Please login to track orders', 'error');
-      navigate('/auth');
+      navigate('/auth', { state: { from: id ? `/order/${id}/track` : '/profile' } });
       return;
     }
     const load = async () => {

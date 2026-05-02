@@ -16,7 +16,7 @@ const Wishlist = () => {
         try {
             const user = JSON.parse(localStorage.getItem('user'));
             if (!user) {
-                navigate('/auth');
+                navigate('/auth', { state: { from: '/wishlist' } });
                 return;
             }
             const items = await getWishlist(user.UserID);
