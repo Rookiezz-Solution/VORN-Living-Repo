@@ -200,7 +200,7 @@ const getOrders = async (userId, page = 1, limit = 10) => {
 const getOrderDetails = async (userId, orderId) => {
     const request = getRequest();
     request.input('userId', userId);
-    request.input('orderId', orderId);
+    request.input('orderId', sql.Int, parseInt(orderId, 10));
 
     // Get user's email to verify guest order ownership if not yet claimed
     const userRes = await request.query(`SELECT Email FROM Users WHERE UserID = @userId`);

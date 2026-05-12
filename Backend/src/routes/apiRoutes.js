@@ -112,6 +112,7 @@ router.get('/admin/orders', adminAuthMiddleware, adminOrderController.list);
 router.get('/admin/orders/:id', adminAuthMiddleware, adminOrderController.get);
 router.put('/admin/orders/:id/status', adminAuthMiddleware, adminOrderController.updateStatus);
 router.put('/admin/orders/:id/tracking', adminAuthMiddleware, adminOrderController.updateTracking);
+router.delete('/admin/orders/:id', adminAuthMiddleware, adminOrderController.remove);
 
 // Admin Returns (Replacements)
 router.get('/admin/returns', adminAuthMiddleware, adminReturnController.list);

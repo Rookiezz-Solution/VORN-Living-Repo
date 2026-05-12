@@ -183,71 +183,82 @@ const AdminDashboard = () => {
     <div className="space-y-6 rf-fade-in">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Orders (Today)</div>
-          <div className="text-2xl font-bold">{ordersToday}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Orders (Today)</div>
+          <div className="text-2xl font-bold text-secondary">{ordersToday}</div>
         </div>
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Revenue (MTD)</div>
-          <div className="text-2xl font-bold">{formatINR(Math.round(revenueMTD))}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Revenue (MTD)</div>
+          <div className="text-2xl font-bold text-secondary">{formatINR(Math.round(revenueMTD))}</div>
         </div>
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Avg Order Value</div>
-          <div className="text-2xl font-bold">{formatINR(Math.round(avgOrderValue))}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Avg Order Value</div>
+          <div className="text-2xl font-bold text-secondary">{formatINR(Math.round(avgOrderValue))}</div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Pending Orders</div>
-          <div className="text-2xl font-bold">{ops.pendingOrders}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Pending Orders</div>
+          <div className="text-2xl font-bold text-secondary">{ops.pendingOrders || 0}</div>
         </div>
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Replacement Requested</div>
-          <div className="text-2xl font-bold">{ops.returnsRequested}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Returns Requested</div>
+          <div className="text-2xl font-bold text-secondary">{ops.returnsRequested || 0}</div>
         </div>
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Out For Delivery</div>
-          <div className="text-2xl font-bold">{ops.outForDeliveryCount}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Out for Delivery</div>
+          <div className="text-2xl font-bold text-secondary">{ops.outForDeliveryCount || 0}</div>
         </div>
-        <div className="rf-card p-4 rf-hover-lift">
-          <div className="text-sm text-gray-600">Shipped No Tracking</div>
-          <div className="text-2xl font-bold">{ops.shippedMissingTracking}</div>
+        <div className="rf-card p-4 rf-hover-lift bg-surface">
+          <div className="text-sm text-secondary/70">Missing Tracking</div>
+          <div className="text-2xl font-bold text-secondary">{ops.shippedMissingTracking || 0}</div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="rf-card p-5">
-          <div className="text-sm text-gray-600 mb-3">Orders by Day (30 days)</div>
-          {isEmptyOrdersByDay ? (
-            <EmptyState title="Orders by Day" />
-          ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <LineChart data={ordersByDay}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="value" name="Orders" stroke={palette.blue} strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rf-card p-5 bg-surface">
+          <h3 className="text-lg font-bold text-secondary mb-4">Orders (Last 30 Days)</h3>
+          {isEmptyOrdersByDay ? <EmptyState title="Order History" /> : (
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={ordersByDay}>
+                  <defs>
+                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={palette.primary || palette.indigo} stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor={palette.primary || palette.indigo} stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-secondary)' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-secondary)' }} />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', borderRadius: '12px', color: 'var(--color-secondary)' }}
+                    itemStyle={{ color: 'var(--color-primary)' }}
+                  />
+                  <Area type="monotone" dataKey="value" stroke={palette.primary || palette.indigo} strokeWidth={3} fillOpacity={1} fill="url(#colorOrders)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
-        <div className="rf-card p-5">
-          <div className="text-sm text-gray-600 mb-3">Revenue by Day (30 days)</div>
-          {isEmptyRevenueByDay ? (
-            <EmptyState title="Revenue by Day" />
-          ) : (
-            <ResponsiveContainer width="100%" height={240}>
-              <AreaChart data={revenueByDay}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Area type="monotone" dataKey="value" name="Revenue" stroke={palette.green} fill={palette.green} />
-              </AreaChart>
-            </ResponsiveContainer>
+
+        <div className="rf-card p-5 bg-surface">
+          <h3 className="text-lg font-bold text-secondary mb-4">Revenue (Last 30 Days)</h3>
+          {isEmptyRevenueByDay ? <EmptyState title="Revenue History" /> : (
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={revenueByDay}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-secondary)' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-secondary)' }} />
+                  <Tooltip
+                    formatter={(v) => formatINR(v)}
+                    contentStyle={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)', borderRadius: '12px', color: 'var(--color-secondary)' }}
+                  />
+                  <Bar dataKey="value" fill={palette.teal} radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           )}
         </div>
       </div>

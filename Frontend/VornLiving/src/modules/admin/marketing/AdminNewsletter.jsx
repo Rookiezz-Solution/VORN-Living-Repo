@@ -75,7 +75,7 @@ const AdminNewsletter = () => {
         <h1 className="text-2xl font-bold">Newsletter Subscribers</h1>
       </div>
       {message && <div className="text-primary">{message}</div>}
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <SearchField
@@ -88,14 +88,14 @@ const AdminNewsletter = () => {
               }}
               inputWidthClassName="w-64"
             />
-            <select className="rf-input" value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">All</option>
+            <select className="rf-input bg-surface text-secondary" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
           <button
-            className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:border-primary transition"
+            className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-surface hover:bg-surface-2 transition text-secondary"
             onClick={async () => { setPage(1); await load({ page: 1 }); }}
             title="Apply"
           >
@@ -103,11 +103,11 @@ const AdminNewsletter = () => {
           </button>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading…</div>
+          <div className="p-6 text-center text-secondary/70">Loading…</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Email</th>
                 <th className="px-4 py-3 border-b border-border">Status</th>
                 <th className="px-4 py-3 border-b border-border">Subscribed</th>
@@ -116,22 +116,26 @@ const AdminNewsletter = () => {
             </thead>
             <tbody>
               {items.map(s => (
-                <tr key={s.SubscriberID} className="border-b border-border">
-                  <td className="px-4 py-3">{s.Email}</td>
-                  <td className="px-4 py-3">{s.IsActive ? 'Active' : 'Inactive'}</td>
-                  <td className="px-4 py-3">{s.SubscribedAt ? new Date(s.SubscribedAt).toLocaleString() : '—'}</td>
+                <tr key={s.SubscriberID} className="border-b border-border hover:bg-primary/5 transition">
+                  <td className="px-4 py-3 text-secondary font-medium">{s.Email}</td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex px-2 py-0.5 rounded text-xs font-bold ${s.IsActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
+                      {s.IsActive ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-secondary/70">{s.SubscribedAt ? new Date(s.SubscribedAt).toLocaleString() : '—'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       {s.IsActive ? (
-                        <button className="p-2 rounded-xl border border-border bg-white text-secondary hover:border-primary transition" onClick={() => toggle(s.SubscriberID, false)} title="Deactivate">
+                        <button className="p-2 rounded-xl border border-border bg-surface text-secondary hover:bg-surface-2 transition" onClick={() => toggle(s.SubscriberID, false)} title="Deactivate">
                           <ToggleLeft className="h-4 w-4" />
                         </button>
                       ) : (
-                        <button className="p-2 rounded-xl border border-border bg-white text-secondary hover:border-primary transition" onClick={() => toggle(s.SubscriberID, true)} title="Activate">
+                        <button className="p-2 rounded-xl border border-border bg-surface text-secondary hover:bg-surface-2 transition" onClick={() => toggle(s.SubscriberID, true)} title="Activate">
                           <ToggleRight className="h-4 w-4" />
                         </button>
                       )}
-                      <button className="p-2 rounded-xl border border-border bg-white text-secondary hover:border-primary transition" onClick={() => askRemove(s.SubscriberID, s.Email)} title="Remove">
+                      <button className="p-2 rounded-xl border border-border bg-surface text-secondary hover:bg-surface-2 transition" onClick={() => askRemove(s.SubscriberID, s.Email)} title="Remove">
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -139,7 +143,7 @@ const AdminNewsletter = () => {
                 </tr>
               ))}
               {items.length === 0 && (
-                <tr><td colSpan={4} className="px-4 py-10 text-center text-gray-500">No subscribers.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-10 text-center text-secondary/50">No subscribers found.</td></tr>
               )}
             </tbody>
           </table>

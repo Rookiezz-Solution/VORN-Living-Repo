@@ -125,7 +125,7 @@ const AdminReturns = () => {
         <h1 className="text-2xl font-bold">Returns (Replacements)</h1>
       </div>
       {message && <div className="text-primary">{message}</div>}
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <SearchField
@@ -141,7 +141,7 @@ const AdminReturns = () => {
           </div>
           <div className="flex items-center">
             <button
-              className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:border-primary transition"
+              className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-surface hover:bg-surface-2 transition text-secondary"
               onClick={() => { setTmpStatus(status || ''); setShowFilter(v => !v); }}
               title="Filter"
               ref={filterBtnRef}
@@ -151,11 +151,11 @@ const AdminReturns = () => {
           </div>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading…</div>
+          <div className="p-6 text-center text-secondary/70">Loading…</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Order #</th>
                 <th className="px-4 py-3 border-b border-border">Item</th>
                 <th className="px-4 py-3 border-b border-border">User</th>
@@ -166,11 +166,11 @@ const AdminReturns = () => {
             </thead>
             <tbody>
               {items.map(r => (
-                <tr key={r.RequestID} className="border-b border-border hover:bg-primary/10 cursor-pointer" onClick={() => openDetail(r.RequestID)}>
-                  <td className="px-4 py-3">{r.OrderNumber}</td>
-                  <td className="px-4 py-3">#{r.OrderItemID}</td>
-                  <td className="px-4 py-3">{r.UserEmail || 'Guest'}</td>
-                  <td className="px-4 py-3">{r.ReplacementReason}</td>
+                <tr key={r.RequestID} className="border-b border-border hover:bg-primary/5 cursor-pointer transition" onClick={() => openDetail(r.RequestID)}>
+                  <td className="px-4 py-3 font-semibold text-secondary">{r.OrderNumber}</td>
+                  <td className="px-4 py-3 text-secondary/70">#{r.OrderItemID}</td>
+                  <td className="px-4 py-3 text-secondary/80">{r.UserEmail || 'Guest'}</td>
+                  <td className="px-4 py-3 truncate max-w-[200px] text-secondary/80">{r.ReplacementReason}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-xs font-semibold ${statusBadgeClass(r.DisplayStatus || r.Status)}`}>
                       {r.DisplayStatus || r.Status}
@@ -180,7 +180,7 @@ const AdminReturns = () => {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); openDetail(r.RequestID); }}
                         title="View"
                       >
@@ -188,7 +188,7 @@ const AdminReturns = () => {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); openEdit(r); }}
                         title="Edit"
                       >
@@ -196,7 +196,7 @@ const AdminReturns = () => {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); confirmDelete(r); }}
                         title="Delete"
                       >
@@ -207,7 +207,9 @@ const AdminReturns = () => {
                 </tr>
               ))}
               {items.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-10 text-center text-gray-500">No return requests.</td></tr>
+                <tr>
+                  <td colSpan={6} className="px-4 py-10 text-center text-secondary/50">No return requests found.</td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -229,8 +231,8 @@ const AdminReturns = () => {
           <div className="text-lg font-bold text-secondary mb-3">Filter Returns</div>
           <div className="space-y-1">
             <div className="text-sm font-semibold text-secondary">Status</div>
-            <select className="rf-input w-full" value={tmpStatus} onChange={(e) => setTmpStatus(e.target.value)}>
-              <option value="">All</option>
+            <select className="rf-input w-full bg-surface" value={tmpStatus} onChange={(e) => setTmpStatus(e.target.value)}>
+              <option value="">All Status</option>
               <option value="Requested">Requested</option>
               <option value="Approved">Approved</option>
               <option value="Rejected">Rejected</option>
@@ -238,20 +240,25 @@ const AdminReturns = () => {
             </select>
           </div>
           <div className="mt-4 flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => setShowFilter(false)}>Cancel</button>
-            <button className="rf-btn-primary px-4 py-2 transition" onClick={async () => {
-              setStatus(tmpStatus || '');
-              setPage(1);
-              setShowFilter(false);
-              await load({ page: 1, status: tmpStatus || '' });
-            }}>Apply</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => setShowFilter(false)}>Cancel</button>
+            <button
+              className="rf-btn-primary px-4 py-2 transition"
+              onClick={async () => {
+                setStatus(tmpStatus || '');
+                setPage(1);
+                setShowFilter(false);
+                await load({ page: 1, status: tmpStatus || '' });
+              }}
+            >
+              Apply
+            </button>
           </div>
         </div>
       </Popover>
 
       <Modal
         open={detailOpen}
-        title={detail?.request?.RequestID ? `Return #${detail.request.RequestID}` : 'Return Details'}
+        title={detail?.request?.RequestID ? `Return Request #${detail.request.RequestID}` : 'Request Details'}
         onClose={() => { setDetailOpen(false); setDetail(null); }}
         maxWidthClassName="max-w-4xl"
       >
@@ -260,27 +267,27 @@ const AdminReturns = () => {
         ) : detail?.request ? (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="rf-card p-4 md:col-span-2">
+              <div className="rf-card p-4 bg-surface md:col-span-2">
                 <div className="text-xs text-secondary/70">Order / User</div>
                 <div className="font-semibold text-secondary mt-1">#{detail.request.OrderNumber} • {detail.request.UserEmail || 'Guest'}</div>
                 <div className="mt-3 text-xs text-secondary/70">Reason</div>
-                <div className="font-semibold text-secondary mt-1">{detail.request.ReplacementReason}</div>
+                <div className="font-semibold text-secondary mt-1">{detail.request.ReplacementReason || '-'}</div>
               </div>
-              <div className="rf-card p-4">
+              <div className="rf-card p-4 bg-surface">
                 <div className="text-xs text-secondary/70">Status</div>
                 <div className="font-semibold text-secondary mt-1">{detail.request.DisplayStatus || detail.request.Status}</div>
                 <div className="mt-3 text-xs text-secondary/70">Order Item</div>
                 <div className="font-semibold text-secondary mt-1">#{detail.request.OrderItemID}</div>
               </div>
             </div>
-            {detail.request.ImageEvidenceURL ? (
-              <div className="rf-card p-4">
+            {detail.request.ImageEvidenceURL && (
+              <div className="rf-card p-4 bg-surface">
                 <div className="text-sm font-semibold text-secondary">Evidence</div>
                 <div className="mt-3 border border-border rounded-2xl overflow-hidden bg-gray-50">
                   <img src={detail.request.ImageEvidenceURL} alt="Evidence" className="w-full max-h-[520px] object-contain bg-white" />
                 </div>
               </div>
-            ) : null}
+            )}
           </div>
         ) : (
           <div className="py-10 text-center text-secondary/70">No details.</div>
@@ -289,7 +296,7 @@ const AdminReturns = () => {
 
       <Modal
         open={editOpen}
-        title={editRow?.RequestID ? `Edit Return #${editRow.RequestID}` : 'Edit Return'}
+        title={editRow?.RequestID ? `Edit Request #${editRow.RequestID}` : 'Edit Request'}
         onClose={() => { setEditOpen(false); setEditRow(null); }}
         maxWidthClassName="max-w-2xl"
       >
@@ -297,23 +304,28 @@ const AdminReturns = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">Order #</div>
-              <input className="rf-input w-full" value={editForm.OrderNumber} readOnly />
+              <input className="rf-input w-full bg-surface-2" value={editForm.OrderNumber} readOnly />
             </div>
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">Item</div>
-              <input className="rf-input w-full" value={editForm.OrderItemID ? `#${editForm.OrderItemID}` : ''} readOnly />
+              <input className="rf-input w-full bg-surface-2" value={editForm.OrderItemID ? `#${editForm.OrderItemID}` : ''} readOnly />
             </div>
             <div className="space-y-1 md:col-span-2">
               <div className="text-sm font-semibold text-secondary">User</div>
-              <input className="rf-input w-full" value={editForm.UserEmail} readOnly />
+              <input className="rf-input w-full bg-surface-2" value={editForm.UserEmail} readOnly />
             </div>
             <div className="space-y-1 md:col-span-2">
-              <div className="text-sm font-semibold text-secondary">Reason</div>
-              <textarea className="rf-input w-full min-h-[90px]" value={editForm.ReplacementReason} onChange={(e) => setEditForm((f) => ({ ...f, ReplacementReason: e.target.value }))} />
+              <div className="text-sm font-semibold text-secondary">Admin Remarks / Reason Adjustment</div>
+              <textarea
+                className="rf-input w-full bg-surface min-h-[100px]"
+                value={editForm.ReplacementReason}
+                onChange={(e) => setEditForm((f) => ({ ...f, ReplacementReason: e.target.value }))}
+                placeholder="Enter remarks or update reason…"
+              />
             </div>
             <div className="space-y-1 md:col-span-2">
               <div className="text-sm font-semibold text-secondary">Status</div>
-              <select className="rf-input w-full" value={editForm.Status} onChange={(e) => setEditForm((f) => ({ ...f, Status: e.target.value }))}>
+              <select className="rf-input w-full bg-surface" value={editForm.Status} onChange={(e) => setEditForm((f) => ({ ...f, Status: e.target.value }))}>
                 <option value="Requested">Requested</option>
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
@@ -322,7 +334,7 @@ const AdminReturns = () => {
             </div>
           </div>
           <div className="flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => { setEditOpen(false); setEditRow(null); }}>Cancel</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => { setEditOpen(false); setEditRow(null); }}>Cancel</button>
             <button className="rf-btn-primary px-4 py-2 transition" onClick={saveEdit}>Save</button>
           </div>
         </div>
@@ -330,14 +342,14 @@ const AdminReturns = () => {
 
       <Modal
         open={!!deleteConfirm}
-        title="Delete Record"
+        title="Delete Request"
         onClose={() => setDeleteConfirm(null)}
         maxWidthClassName="max-w-md"
       >
         <div className="space-y-4">
-          <div className="text-secondary">Are you sure you want to delete this record?</div>
+          <div className="text-secondary">Are you sure you want to delete this return request?</div>
           <div className="flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
             <button className="rf-btn-secondary px-4 py-2 transition" onClick={doDelete}>Delete</button>
           </div>
         </div>

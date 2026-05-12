@@ -193,6 +193,16 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/10" />
           <div className="absolute inset-0 bg-hero-gradient opacity-90" />
           <div className="container mx-auto h-full flex items-center relative">
+            {/* Top Center Tagline */}
+            <div className="absolute top-8 left-0 right-0 flex justify-center">
+              <p
+                className="text-2xl md:text-3xl font-bold text-white/90"
+                style={{ textShadow: "0 1px 10px rgba(0,0,0,0.50)" }}
+              >
+                Where Iron Becomes Art
+              </p>
+            </div>
+
             <div className="max-w-xl text-white px-4">
               <p className="inline-flex items-center rounded-full px-4 py-2 text-sm tracking-wide rf-glass-pill">
                 Premium Home Accessories

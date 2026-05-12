@@ -136,12 +136,12 @@ const AdminProductsList = () => {
       {message && <div className="text-primary">{message}</div>}
       {/* Delete Confirm Popup */}
       {confirm && !loading && !deleting && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40">
-          <div className="rf-card w-full max-w-md p-6 shadow-xl">
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="rf-card w-full max-w-md p-6 shadow-xl bg-surface">
             <h3 className="text-lg font-bold text-secondary mb-2">Delete Product</h3>
-            <p className="text-sm text-gray-600">Are you sure you want to delete “{confirm.name}” (ID #{confirm.id})? This action will remove the product and all related data including cart items and order items referencing it.</p>
+            <p className="text-sm text-secondary/70">Are you sure you want to delete “{confirm.name}” (ID #{confirm.id})? This action will remove the product and all related data including cart items and order items referencing it.</p>
             <div className="mt-4 flex justify-end gap-2">
-              <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => setConfirm(null)}>Cancel</button>
+              <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => setConfirm(null)}>Cancel</button>
               <button
                 className="rf-btn-secondary px-4 py-2 transition"
                 onClick={async () => {
@@ -182,7 +182,7 @@ const AdminProductsList = () => {
           </div>
           <div className="relative">
             <button
-              className="flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:bg-gray-50 transition"
+              className="flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-surface hover:bg-surface-2 transition text-secondary"
               onClick={() => {
                 setShowFilter((v) => {
                   const next = !v;
@@ -195,13 +195,13 @@ const AdminProductsList = () => {
               <span>Filter</span>
             </button>
             {showFilter && (
-              <div className="absolute right-0 mt-2 top-full rf-card shadow-xl p-4 z-50 w-[320px] md:w-[480px] rf-soft-pop">
+              <div className="absolute right-0 mt-2 top-full rf-card shadow-xl p-4 z-50 w-[320px] md:w-[480px] rf-soft-pop bg-surface">
                 <button className="absolute right-3 top-3 text-secondary hover:text-primary" onClick={() => setShowFilter(false)}>
                   <X className="h-5 w-5" />
                 </button>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Category</label>
+                    <label className="block text-sm font-medium mb-1 text-secondary">Category</label>
                     <SelectDrop
                       value={draftFilters.category}
                       onChange={(val) => setDraftFilters({ ...draftFilters, category: val })}
@@ -211,25 +211,25 @@ const AdminProductsList = () => {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Min Price</label>
+                    <label className="block text-sm font-medium mb-1 text-secondary">Min Price</label>
                     <input
                       type="number"
                       value={draftFilters.minPrice}
                       onChange={(e) => setDraftFilters({ ...draftFilters, minPrice: e.target.value })}
-                      className="rf-input w-full"
+                      className="rf-input w-full bg-surface"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Max Price</label>
+                    <label className="block text-sm font-medium mb-1 text-secondary">Max Price</label>
                     <input
                       type="number"
                       value={draftFilters.maxPrice}
                       onChange={(e) => setDraftFilters({ ...draftFilters, maxPrice: e.target.value })}
-                      className="rf-input w-full"
+                      className="rf-input w-full bg-surface"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Rating</label>
+                    <label className="block text-sm font-medium mb-1 text-secondary">Rating</label>
                     <SelectDrop
                       value={draftFilters.rating}
                       onChange={(val) => setDraftFilters({ ...draftFilters, rating: val })}
@@ -256,7 +256,7 @@ const AdminProductsList = () => {
                     Apply
                   </button>
                   <button
-                    className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition"
+                    className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary"
                     onClick={() => {
                       clearFilters();
                       setShowFilter(false);
@@ -271,76 +271,76 @@ const AdminProductsList = () => {
           <Link to="/admin/catalog/products/new" className="rf-btn-primary px-4 py-2 transition">Add Product</Link>
         </div>
       </div>
-      <div className="rf-card p-0 overflow-x-auto shadow-xl">
+      <div className="rf-card p-0 overflow-x-auto shadow-xl bg-surface">
         {loading ? (
-          <div className="p-4 text-gray-500">Loading...</div>
+          <div className="p-4 text-secondary/50">Loading...</div>
         ) : (
           <table className="min-w-full">
             <thead>
-              <tr className="text-left bg-white">
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+              <tr className="text-left bg-surface-2">
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>ID</span>
                     <button onClick={() => toggleColumnSort('id')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'id' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>Name</span>
                     <button onClick={() => toggleColumnSort('name')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'name' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">Category</th>
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+                <th className="px-4 py-3 border-b border-border text-secondary/70">Category</th>
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>Price</span>
                     <button onClick={() => toggleColumnSort('price')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'price' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>Stock</span>
                     <button onClick={() => toggleColumnSort('stock')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'stock' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>Rating</span>
                     <button onClick={() => toggleColumnSort('rating')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'rating' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">
-                  <div className="flex items-center gap-2">
+                <th className="px-4 py-3 border-b border-border">
+                  <div className="flex items-center gap-2 text-secondary/70">
                     <span>Reviews</span>
                     <button onClick={() => toggleColumnSort('reviews')}>
                       <ChevronUp className={`h-4 w-4 transition ${sortState.column === 'reviews' ? (sortState.direction === 'desc' ? 'rotate-180' : 'rotate-0') : 'opacity-50 rotate-0'}`} />
                     </button>
                   </div>
                 </th>
-                <th className="px-4 py-3 border-b">Actions</th>
+                <th className="px-4 py-3 border-b border-border text-secondary/70">Actions</th>
               </tr>
             </thead>
-            <tbody className="bg-white">
+            <tbody className="bg-surface">
               {sortedProducts.map(p => (
                 <tr
                   key={p.ProductID}
-                  className="hover:bg-primary/10 cursor-pointer"
+                  className="hover:bg-primary/5 cursor-pointer transition border-b border-border last:border-0"
                   onClick={() => setSelected(p)}
                 >
-                  <td className="px-4 py-3 border-b">{p.ProductID}</td>
-                  <td className="px-4 py-3 border-b">
+                  <td className="px-4 py-3 text-secondary/60">{p.ProductID}</td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded border border-border overflow-hidden bg-gray-50 flex-shrink-0">
+                      <div className="h-10 w-10 rounded border border-border overflow-hidden bg-surface-2 flex-shrink-0">
                         <ProductImage
                           src={p.ImageURL || p.image}
                           alt={p.ProductName}
@@ -351,31 +351,31 @@ const AdminProductsList = () => {
                         />
                       </div>
                       <div>
-                        <div className="font-semibold">{p.ProductName}</div>
-                        <div className="text-xs text-gray-600">{p.ProductSlug}</div>
+                        <div className="font-semibold text-secondary">{p.ProductName}</div>
+                        <div className="text-xs text-secondary/50">{p.ProductSlug}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 border-b">{p.CategoryName || '-'}</td>
-                  <td className="px-4 py-3 border-b">
+                  <td className="px-4 py-3 text-secondary/70">{p.CategoryName || '-'}</td>
+                  <td className="px-4 py-3 font-medium text-secondary">
                     {(p.EffectivePrice ?? p.SalePrice ?? p.RegularPrice) != null
                       ? formatINR(p.EffectivePrice ?? p.SalePrice ?? p.RegularPrice)
                       : '-'}
                   </td>
-                  <td className="px-4 py-3 border-b">{p.StockQuantity ?? '-'}</td>
-                  <td className="px-4 py-3 border-b">{(p.Rating ?? 0).toFixed ? (p.Rating || 0).toFixed(1) : p.Rating || 0}</td>
-                  <td className="px-4 py-3 border-b">{p.ReviewCount ?? 0}</td>
-                  <td className="px-4 py-3 border-b">
+                  <td className="px-4 py-3 text-secondary/70">{p.StockQuantity ?? '-'}</td>
+                  <td className="px-4 py-3 text-secondary/70">{(p.Rating ?? 0).toFixed ? (p.Rating || 0).toFixed(1) : p.Rating || 0}</td>
+                  <td className="px-4 py-3 text-secondary/70">{p.ReviewCount ?? 0}</td>
+                  <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
-                        className="p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); navigate(`/admin/catalog/products/${p.ProductID}`); }}
                         title="Edit"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
-                        className="p-2 rounded-xl border border-border text-secondary hover:border-primary transition"
+                        className="p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); setConfirm({ id: p.ProductID, name: p.ProductName }); }}
                         title="Delete"
                       >

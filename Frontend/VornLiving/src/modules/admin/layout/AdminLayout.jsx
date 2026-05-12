@@ -39,19 +39,19 @@ const AdminLayout = () => {
   return (
     <div className="min-h-screen rf-page text-secondary">
       <Toast />
-      <header className="border-b border-border bg-secondary text-white sticky top-0 z-40">
-        <div className="container mx-auto grid grid-cols-12 items-center gap-4 p-4">
+      <header className="fixed top-0 left-0 right-0 z-50 rf-header bg-black/35 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_24px_rgba(0,0,0,0.22)] text-white transition-transform duration-300">
+        <div className="container mx-auto grid grid-cols-12 items-center gap-4 py-2 px-4">
           <div className="col-span-12 md:col-span-3 flex items-center gap-2">
             <Link to="/admin/dashboard" className="flex items-center">
               <img
                 src={encodeURI('/logo/VORN LIVING FINAL LOGO-APR 6.png')}
                 alt="Vorn Living"
-                className="h-11 md:h-12 w-auto max-w-[250px] object-cover rounded-[18%]"
+                className="h-20 md:h-24 w-auto max-w-[300px] object-contain -my-2"
                 loading="eager"
                 decoding="async"
               />
             </Link>
-            <span className="px-2 py-0.5 text-xs rounded bg-primary text-secondary">Admin</span>
+            <span className="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-primary text-secondary">Admin</span>
           </div>
           <nav className="col-span-12 md:col-span-7 flex flex-wrap items-center gap-3">
             <Link to="/admin/dashboard" className={linkClass(isActive(['/admin/dashboard']))}>Dashboard</Link>
@@ -64,11 +64,11 @@ const AdminLayout = () => {
               </button>
               {openCatalog && (
                 <div
-                  className="absolute left-0 top-full bg-white text-secondary border border-border rounded-xl shadow-lg min-w-[220px] z-50 overflow-hidden rf-soft-pop"
+                  className="absolute left-0 mt-3 w-64 bg-black/45 backdrop-blur-2xl text-white shadow-xl rounded-xl overflow-hidden z-50 border border-white/10 rf-soft-pop"
                 >
-                  <Link to="/admin/catalog/products" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2">Products</Link>
-                  <Link to="/admin/catalog/products/new" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2">New Product</Link>
-                  <Link to="/admin/catalog/categories" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2">Categories</Link>
+                  <Link to="/admin/catalog/products" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Products</Link>
+                  <Link to="/admin/catalog/products/new" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">New Product</Link>
+                  <Link to="/admin/catalog/categories" onClick={() => openExclusive('catalog', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Categories</Link>
                 </div>
               )}
             </div>
@@ -81,10 +81,10 @@ const AdminLayout = () => {
               </button>
               {openOrders && (
                 <div
-                  className="absolute left-0 top-full bg-white text-secondary border border-border rounded-xl shadow-lg min-w-[200px] z-50 overflow-hidden rf-soft-pop"
+                  className="absolute left-0 mt-3 w-64 bg-black/45 backdrop-blur-2xl text-white shadow-xl rounded-xl overflow-hidden z-50 border border-white/10 rf-soft-pop"
                 >
-                  <Link to="/admin/orders" onClick={() => openExclusive('orders', false)} className="block px-4 py-2">Manage Orders</Link>
-                  <Link to="/admin/returns" onClick={() => openExclusive('orders', false)} className="block px-4 py-2">Returns</Link>
+                  <Link to="/admin/orders" onClick={() => openExclusive('orders', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Manage Orders</Link>
+                  <Link to="/admin/returns" onClick={() => openExclusive('orders', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Returns</Link>
                 </div>
               )}
             </div>
@@ -97,10 +97,10 @@ const AdminLayout = () => {
               </button>
               {openMarketing && (
                 <div
-                  className="absolute left-0 top-full bg-white text-secondary border border-border rounded-xl shadow-lg min-w-[200px] z-50 overflow-hidden rf-soft-pop"
+                  className="absolute left-0 mt-3 w-64 bg-black/45 backdrop-blur-2xl text-white shadow-xl rounded-xl overflow-hidden z-50 border border-white/10 rf-soft-pop"
                 >
-                  <Link to="/admin/reviews" onClick={() => openExclusive('marketing', false)} className="block px-4 py-2">Reviews</Link>
-                  <Link to="/admin/newsletter" onClick={() => openExclusive('marketing', false)} className="block px-4 py-2">Newsletter</Link>
+                  <Link to="/admin/reviews" onClick={() => openExclusive('marketing', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Reviews</Link>
+                  <Link to="/admin/newsletter" onClick={() => openExclusive('marketing', false)} className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Newsletter</Link>
                 </div>
               )}
             </div>
@@ -108,22 +108,22 @@ const AdminLayout = () => {
           </nav>
           <div className="col-span-12 md:col-span-2 flex items-center justify-end gap-3 relative">
             <button
-              className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/20 bg-white/10 hover:bg-white/15 hover:border-white/40 transition"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl border border-white/15 bg-white/10 hover:bg-white/20 hover:border-white/30 transition"
               onClick={() => setOpenMenu(v => !v)}
             >
               <User className="h-5 w-5 text-white" />
               <span className="text-sm truncate max-w-[180px]">{localStorage.getItem('adminEmail') || 'Admin'}</span>
             </button>
             {openMenu && (
-              <div className="absolute right-0 top-12 bg-white text-secondary border border-border rounded-xl shadow-lg min-w-[220px] rf-soft-pop">
-                <Link to="/admin/profile" className="block px-4 py-2 hover:bg-primary/10">Profile</Link>
-                <button onClick={logout} className="w-full text-left px-4 py-2 hover:bg-primary/10">Logout</button>
+              <div className="absolute right-0 mt-3 w-64 bg-black/45 backdrop-blur-2xl text-white shadow-xl rounded-xl overflow-hidden z-50 border border-white/10 rf-soft-pop">
+                <Link to="/admin/profile" className="block px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Profile</Link>
+                <button onClick={logout} className="w-full text-left px-4 py-2.5 text-white/90 hover:bg-white/10 hover:text-white transition">Logout</button>
               </div>
             )}
           </div>
         </div>
       </header>
-      <main className="container mx-auto p-6">
+      <main className="container mx-auto pt-40 md:pt-32 p-6">
         <Outlet />
       </main>
     </div>

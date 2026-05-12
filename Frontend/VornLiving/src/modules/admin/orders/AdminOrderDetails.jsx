@@ -73,12 +73,12 @@ const AdminOrderDetails = () => {
   };
 
   if (loading) {
-    return <div className="rf-card p-6 text-secondary">Loading…</div>;
+    return <div className="rf-card p-6 text-secondary bg-surface">Loading…</div>;
   }
 
   if (!data?.order) {
     return (
-      <div className="rf-card p-6 text-secondary">
+      <div className="rf-card p-6 text-secondary bg-surface">
         <div className="font-semibold">Order not found</div>
         <Link to="/admin/orders" className="link-underline text-primary">Back to Orders</Link>
       </div>
@@ -92,13 +92,13 @@ const AdminOrderDetails = () => {
           <div className="text-2xl font-bold text-secondary">Order {data.order.OrderNumber}</div>
           <div className="text-sm text-secondary/70">#{data.order.OrderID} • {data.order.UserEmail || 'Guest'}</div>
         </div>
-        <Link to="/admin/orders" className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition">
+        <Link to="/admin/orders" className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary">
           Back
         </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="rf-card p-5 space-y-3 lg:col-span-1">
+        <div className="rf-card p-5 space-y-3 lg:col-span-1 bg-surface">
           <div className="text-sm font-semibold text-secondary">Amounts</div>
           <div className="text-sm text-secondary/80">SubTotal: <span className="font-semibold">{formatINR(data.order.SubTotal)}</span></div>
           <div className="text-sm text-secondary/80">Shipping: <span className="font-semibold">{formatINR(data.order.ShippingAmount)}</span></div>
@@ -106,7 +106,7 @@ const AdminOrderDetails = () => {
 
           <div className="pt-3 border-t border-border space-y-2">
             <div className="text-sm font-semibold text-secondary">Status</div>
-            <select className="rf-input w-full" value={statusValue} onChange={(e) => setStatusValue(e.target.value)} disabled={busy}>
+            <select className="rf-input w-full bg-surface" value={statusValue} onChange={(e) => setStatusValue(e.target.value)} disabled={busy}>
               {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
             <button className="rf-btn-primary px-4 py-2 w-full" disabled={busy} onClick={updateStatus}>
@@ -115,19 +115,19 @@ const AdminOrderDetails = () => {
           </div>
         </div>
 
-        <div className="rf-card p-5 space-y-3 lg:col-span-1">
+        <div className="rf-card p-5 space-y-3 lg:col-span-1 bg-surface">
           <div className="text-sm font-semibold text-secondary">Tracking</div>
-          <input className="rf-input w-full" placeholder="Carrier" value={carrier} onChange={(e) => setCarrier(e.target.value)} disabled={busy} />
-          <input className="rf-input w-full" placeholder="Tracking Number" value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} disabled={busy} />
-          <input type="datetime-local" className="rf-input w-full" value={shippedAt} onChange={(e) => setShippedAt(e.target.value)} disabled={busy} />
-          <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" disabled={busy} onClick={updateTracking}>
+          <input className="rf-input w-full bg-surface" placeholder="Carrier" value={carrier} onChange={(e) => setCarrier(e.target.value)} disabled={busy} />
+          <input className="rf-input w-full bg-surface" placeholder="Tracking Number" value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} disabled={busy} />
+          <input type="datetime-local" className="rf-input w-full bg-surface" value={shippedAt} onChange={(e) => setShippedAt(e.target.value)} disabled={busy} />
+          <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" disabled={busy} onClick={updateTracking}>
             Update Tracking
           </button>
         </div>
 
-        <div className="rf-card p-5 space-y-3 lg:col-span-1">
+        <div className="rf-card p-5 space-y-3 lg:col-span-1 bg-surface">
           <div className="text-sm font-semibold text-secondary">History</div>
-          <div className="border border-border rounded-xl p-3 max-h-56 overflow-auto text-sm text-secondary/80">
+          <div className="border border-border rounded-xl p-3 max-h-56 overflow-auto text-sm text-secondary/80 bg-surface-2">
             {(data.statusHistory || []).length ? (data.statusHistory || []).map(h => (
               <div key={h.HistoryID} className="flex items-center justify-between gap-3 py-1">
                 <div className="min-w-0 truncate">{h.OldStatus} → {h.NewStatus}</div>
@@ -138,7 +138,7 @@ const AdminOrderDetails = () => {
         </div>
       </div>
 
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between">
           <div className="text-lg font-bold text-secondary">Items</div>
           <div className="text-sm text-secondary/70">{(data.items || []).length} item(s)</div>
@@ -146,7 +146,7 @@ const AdminOrderDetails = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-secondary/70">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Product</th>
                 <th className="px-4 py-3 border-b border-border">Variant</th>
                 <th className="px-4 py-3 border-b border-border">SKU</th>
@@ -157,10 +157,10 @@ const AdminOrderDetails = () => {
             </thead>
             <tbody>
               {(data.items || []).map(it => (
-                <tr key={it.OrderItemID} className="border-b border-border">
+                <tr key={it.OrderItemID} className="border-b border-border hover:bg-primary/5">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-xl border border-border overflow-hidden bg-gray-50 flex-shrink-0">
+                      <div className="h-12 w-12 rounded-xl border border-border overflow-hidden bg-surface-2 flex-shrink-0">
                         <ProductImage
                           src={it.ImageURL}
                           alt={it.ProductName}
@@ -170,16 +170,16 @@ const AdminOrderDetails = () => {
                           className="h-full w-full object-cover"
                         />
                       </div>
-                      <a href={`/product/${it.ProductID}`} target="_blank" rel="noreferrer" className="text-secondary hover:text-primary transition">
+                      <a href={`/product/${it.ProductID}`} target="_blank" rel="noreferrer" className="text-secondary hover:text-primary transition font-medium">
                         {it.ProductName}
                       </a>
                     </div>
                   </td>
-                  <td className="px-4 py-3">{it.VariantName || '-'}</td>
-                  <td className="px-4 py-3">{it.SKU}</td>
-                  <td className="px-4 py-3">{it.Quantity}</td>
-                  <td className="px-4 py-3">{formatINR(it.UnitPrice)}</td>
-                  <td className="px-4 py-3">{formatINR(it.TotalPrice)}</td>
+                  <td className="px-4 py-3 text-secondary/80">{it.VariantName || '-'}</td>
+                  <td className="px-4 py-3 text-secondary/80">{it.SKU}</td>
+                  <td className="px-4 py-3 text-secondary/80">{it.Quantity}</td>
+                  <td className="px-4 py-3 text-secondary/80">{formatINR(it.UnitPrice)}</td>
+                  <td className="px-4 py-3 font-medium text-secondary">{formatINR(it.TotalPrice)}</td>
                 </tr>
               ))}
               {(data.items || []).length === 0 && (

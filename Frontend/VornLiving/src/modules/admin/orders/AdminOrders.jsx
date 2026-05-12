@@ -1,5 +1,5 @@
 import React from 'react';
-import { adminGetOrder, adminListOrders, adminUpdateOrderStatus } from '../../../services/api';
+import { adminGetOrder, adminListOrders, adminUpdateOrderStatus, adminDeleteOrder } from '../../../services/api';
 import { Eye, X, Filter as FilterIcon, Pencil, Trash2 } from 'lucide-react';
 import { formatINR } from '../../../utils/formatINR';
 import PaginationBar from '../../../components/PaginationBar';
@@ -118,12 +118,25 @@ const AdminOrders = () => {
   };
 
   const confirmDelete = (row) => setDeleteConfirm(row);
-  const doDelete = () => {
+  const doDelete = async () => {
     if (!deleteConfirm) return;
     const id = deleteConfirm.OrderID;
+    const prevItems = [...items];
+    const prevCount = totalCount;
+
     setItems((cur) => cur.filter((x) => x.OrderID !== id));
     setTotalCount((c) => Math.max(0, (c || 0) - 1));
     setDeleteConfirm(null);
+
+    try {
+      await adminDeleteOrder(id);
+      window.dispatchEvent(new CustomEvent('toast:show', { detail: { type: 'success', message: 'Order deleted successfully' } }));
+    } catch (e) {
+      setItems(prevItems);
+      setTotalCount(prevCount);
+      const msg = e?.response?.data?.message || 'Delete failed';
+      window.dispatchEvent(new CustomEvent('toast:show', { detail: { type: 'error', message: msg } }));
+    }
   };
   return (
     <div className="space-y-4 rf-fade-in">
@@ -131,7 +144,7 @@ const AdminOrders = () => {
         <h1 className="text-2xl font-bold">Manage Orders</h1>
       </div>
       {message && <div className="text-primary">{message}</div>}
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <SearchField
@@ -147,7 +160,7 @@ const AdminOrders = () => {
           </div>
           <div className="flex items-center">
             <button
-              className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:border-primary transition"
+              className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-surface hover:bg-surface-2 transition text-secondary"
               onClick={() => {
                 setTmpStatus(status || '');
                 setTmpDateFrom(dateFrom || '');
@@ -163,11 +176,11 @@ const AdminOrders = () => {
           </div>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading…</div>
+          <div className="p-6 text-center text-secondary/70">Loading…</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Order #</th>
                 <th className="px-4 py-3 border-b border-border">Customer</th>
                 <th className="px-4 py-3 border-b border-border">Total</th>
@@ -178,21 +191,21 @@ const AdminOrders = () => {
             </thead>
             <tbody>
               {items.map(o => (
-                <tr key={o.OrderID} className="border-b border-border hover:bg-primary/10 cursor-pointer" onClick={() => openDetail(o.OrderID)}>
+                <tr key={o.OrderID} className="border-b border-border hover:bg-primary/5 cursor-pointer" onClick={() => openDetail(o.OrderID)}>
                   <td className="px-4 py-3 font-semibold text-secondary">{o.OrderNumber}</td>
-                  <td className="px-4 py-3">{o.UserEmail || 'Guest'}</td>
-                  <td className="px-4 py-3">{formatINR(o.TotalAmount)}</td>
+                  <td className="px-4 py-3 text-secondary/80">{o.UserEmail || 'Guest'}</td>
+                  <td className="px-4 py-3 font-medium text-secondary">{formatINR(o.TotalAmount)}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full border text-xs font-semibold ${statusBadgeClass(o.OrderStatus)}`}>
                       {o.OrderStatus}
                     </span>
                   </td>
-                  <td className="px-4 py-3">{o.CreatedAt ? String(o.CreatedAt).slice(0, 19).replace('T',' ') : ''}</td>
+                  <td className="px-4 py-3 text-secondary/80">{o.CreatedAt ? String(o.CreatedAt).slice(0, 19).replace('T',' ') : ''}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); openDetail(o.OrderID); }}
                         title="View"
                       >
@@ -200,7 +213,7 @@ const AdminOrders = () => {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); openEdit(o); }}
                         title="Edit"
                       >
@@ -208,7 +221,7 @@ const AdminOrders = () => {
                       </button>
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         onClick={(e) => { e.stopPropagation(); confirmDelete(o); }}
                         title="Delete"
                       >
@@ -220,7 +233,7 @@ const AdminOrders = () => {
               ))}
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-10 text-center text-gray-500">No orders found.</td>
+                  <td colSpan={6} className="px-4 py-10 text-center text-secondary/70">No orders found.</td>
                 </tr>
               )}
             </tbody>
@@ -244,14 +257,14 @@ const AdminOrders = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">Status</div>
-              <select className="rf-input w-full" value={tmpStatus} onChange={(e) => setTmpStatus(e.target.value)}>
+              <select className="rf-input w-full bg-surface" value={tmpStatus} onChange={(e) => setTmpStatus(e.target.value)}>
                 <option value="">All Status</option>
                 {statusOptions.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">Sort</div>
-              <select className="rf-input w-full" value={tmpSort} onChange={(e) => setTmpSort(e.target.value)}>
+              <select className="rf-input w-full bg-surface" value={tmpSort} onChange={(e) => setTmpSort(e.target.value)}>
                 <option value="oldest">Oldest</option>
                 <option value="newest">Newest</option>
                 <option value="amount-desc">Amount High→Low</option>
@@ -260,15 +273,15 @@ const AdminOrders = () => {
             </div>
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">From</div>
-              <input type="date" className="rf-input w-full" value={tmpDateFrom} onChange={(e) => setTmpDateFrom(e.target.value)} />
+              <input type="date" className="rf-input w-full bg-surface" value={tmpDateFrom} onChange={(e) => setTmpDateFrom(e.target.value)} />
             </div>
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">To</div>
-              <input type="date" className="rf-input w-full" value={tmpDateTo} onChange={(e) => setTmpDateTo(e.target.value)} />
+              <input type="date" className="rf-input w-full bg-surface" value={tmpDateTo} onChange={(e) => setTmpDateTo(e.target.value)} />
             </div>
           </div>
           <div className="mt-4 flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => setShowFilter(false)}>Cancel</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => setShowFilter(false)}>Cancel</button>
             <button
               className="rf-btn-primary px-4 py-2 transition"
               onClick={async () => {
@@ -298,19 +311,19 @@ const AdminOrders = () => {
         ) : detail?.order ? (
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-              <div className="rf-card p-4">
+              <div className="rf-card p-4 bg-surface">
                 <div className="text-xs text-secondary/70">Customer</div>
                 <div className="font-semibold text-secondary mt-1">{detail.order.UserEmail || 'Guest'}</div>
                 <div className="mt-3 text-xs text-secondary/70">Created</div>
                 <div className="font-semibold text-secondary mt-1">{detail.order.CreatedAt ? String(detail.order.CreatedAt).slice(0, 19).replace('T', ' ') : '-'}</div>
               </div>
-              <div className="rf-card p-4">
+              <div className="rf-card p-4 bg-surface">
                 <div className="text-xs text-secondary/70">Status</div>
                 <div className="font-semibold text-secondary mt-1">{detail.order.OrderStatus}</div>
                 <div className="mt-3 text-xs text-secondary/70">Shipping Status</div>
                 <div className="font-semibold text-secondary mt-1">{detail.shipping?.ShippingStatus || '-'}</div>
               </div>
-              <div className="rf-card p-4">
+              <div className="rf-card p-4 bg-surface">
                 <div className="text-xs text-secondary/70">Total</div>
                 <div className="font-semibold text-primary mt-1">{formatINR(detail.order.TotalAmount)}</div>
                 <div className="mt-3 text-xs text-secondary/70">SubTotal / Shipping</div>
@@ -318,7 +331,7 @@ const AdminOrders = () => {
               </div>
             </div>
 
-            <div className="rf-card p-0 overflow-hidden">
+            <div className="rf-card p-0 overflow-hidden bg-surface">
               <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                 <div className="font-bold text-secondary">Items</div>
                 <div className="text-sm text-secondary/70">{(detail.items || []).length} item(s)</div>
@@ -326,7 +339,7 @@ const AdminOrders = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-gray-50 text-left text-secondary/70">
+                    <tr className="bg-surface-2 text-left text-secondary/70">
                       <th className="px-4 py-3 border-b border-border">Product</th>
                       <th className="px-4 py-3 border-b border-border">Variant</th>
                       <th className="px-4 py-3 border-b border-border">Qty</th>
@@ -336,10 +349,10 @@ const AdminOrders = () => {
                   </thead>
                   <tbody>
                     {(detail.items || []).map(it => (
-                      <tr key={it.OrderItemID} className="border-b border-border">
+                      <tr key={it.OrderItemID} className="border-b border-border hover:bg-primary/5">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-3">
-                            <div className="h-12 w-12 rounded-xl border border-border overflow-hidden bg-gray-50 flex-shrink-0">
+                            <div className="h-12 w-12 rounded-xl border border-border overflow-hidden bg-surface-2 flex-shrink-0">
                               <ProductImage
                                 src={it.ImageURL}
                                 alt={it.ProductName}
@@ -352,10 +365,10 @@ const AdminOrders = () => {
                             <div className="font-semibold text-secondary min-w-0 truncate">{it.ProductName}</div>
                           </div>
                         </td>
-                        <td className="px-4 py-3">{it.VariantName || '-'}</td>
-                        <td className="px-4 py-3">{it.Quantity}</td>
-                        <td className="px-4 py-3">{formatINR(it.UnitPrice)}</td>
-                        <td className="px-4 py-3">{formatINR(it.TotalPrice)}</td>
+                        <td className="px-4 py-3 text-secondary/80">{it.VariantName || '-'}</td>
+                        <td className="px-4 py-3 text-secondary/80">{it.Quantity}</td>
+                        <td className="px-4 py-3 text-secondary/80">{formatINR(it.UnitPrice)}</td>
+                        <td className="px-4 py-3 font-medium text-secondary">{formatINR(it.TotalPrice)}</td>
                       </tr>
                     ))}
                     {(detail.items || []).length === 0 && (
@@ -383,21 +396,21 @@ const AdminOrders = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">Order #</div>
-              <input className="rf-input w-full" value={editForm.OrderNumber} readOnly />
+              <input className="rf-input w-full bg-surface-2" value={editForm.OrderNumber} readOnly />
             </div>
             <div className="space-y-1">
               <div className="text-sm font-semibold text-secondary">User</div>
-              <input className="rf-input w-full" value={editForm.UserEmail} readOnly />
+              <input className="rf-input w-full bg-surface-2" value={editForm.UserEmail} readOnly />
             </div>
             <div className="space-y-1 md:col-span-2">
               <div className="text-sm font-semibold text-secondary">Status</div>
-              <select className="rf-input w-full" value={editForm.Status} onChange={(e) => setEditForm((f) => ({ ...f, Status: e.target.value }))}>
+              <select className="rf-input w-full bg-surface" value={editForm.Status} onChange={(e) => setEditForm((f) => ({ ...f, Status: e.target.value }))}>
                 {statusOptions.map((s) => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
           </div>
           <div className="flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => { setEditOpen(false); setEditRow(null); }}>Cancel</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => { setEditOpen(false); setEditRow(null); }}>Cancel</button>
             <button className="rf-btn-primary px-4 py-2 transition" onClick={saveEdit}>Save</button>
           </div>
         </div>
@@ -405,14 +418,14 @@ const AdminOrders = () => {
 
       <Modal
         open={!!deleteConfirm}
-        title="Delete Record"
+        title="Delete Order"
         onClose={() => setDeleteConfirm(null)}
         maxWidthClassName="max-w-md"
       >
         <div className="space-y-4">
-          <div className="text-secondary">Are you sure you want to delete this record?</div>
+          <div className="text-secondary">Are you sure you want to delete this order? This will also remove related shipping and history records.</div>
           <div className="flex justify-end gap-2">
-            <button className="border border-border px-4 py-2 rounded-xl bg-white hover:bg-gray-50 transition" onClick={() => setDeleteConfirm(null)}>Cancel</button>
+            <button className="border border-border px-4 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary" onClick={() => setDeleteConfirm(null)}>Cancel</button>
             <button className="rf-btn-secondary px-4 py-2 transition" onClick={doDelete}>Delete</button>
           </div>
         </div>

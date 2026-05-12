@@ -315,7 +315,7 @@ const findOrCreateAddress = async (address) => {
 const cancelOrder = async (userId, orderId, reason) => {
     const request = getRequest();
     request.input('userId', userId);
-    request.input('orderId', orderId);
+    request.input('orderId', sql.Int, parseInt(orderId, 10));
     request.input('reason', reason || 'User cancelled');
 
     const orderRes = await request.query(`SELECT OrderStatus FROM Orders WHERE OrderID = @orderId AND UserID = @userId`);
@@ -349,7 +349,7 @@ const cancelOrder = async (userId, orderId, reason) => {
 const requestReplacement = async (userId, orderId, orderItemId, data) => {
     const request = getRequest();
     request.input('userId', userId);
-    request.input('orderId', orderId);
+    request.input('orderId', sql.Int, parseInt(orderId, 10));
     request.input('orderItemId', orderItemId);
     request.input('reason', data.reason || 'Replacement requested');
     const rawCat = (data.reasonCategory || '').toString().trim().toLowerCase();
@@ -392,7 +392,7 @@ const requestReplacement = async (userId, orderId, orderItemId, data) => {
 const selectReplacement = async (userId, orderId, orderItemId, newProductId, newVariantId /* mode is ignored */) => {
     const r = getRequest();
     r.input('userId', userId);
-    r.input('orderId', orderId);
+    r.input('orderId', sql.Int, parseInt(orderId, 10));
     r.input('orderItemId', orderItemId);
     r.input('newProductId', newProductId);
     r.input('newVariantId', newVariantId || null);

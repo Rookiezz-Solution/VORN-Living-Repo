@@ -128,9 +128,9 @@ const AdminCategories = () => {
         </button>
       </div>
       {message && <div className="text-primary">{message}</div>}
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <div className="text-sm text-secondary">Manage categories used across products.</div>
+          <div className="text-sm text-secondary/70">Manage categories used across products.</div>
           <div className="flex items-center gap-3">
             <SearchField
               value={search}
@@ -144,7 +144,7 @@ const AdminCategories = () => {
             />
             <div className="relative">
               <select
-                className="rf-input appearance-none pr-10"
+                className="rf-input appearance-none pr-10 bg-surface text-secondary"
                 value={sort}
                 onChange={async (e) => { setSort(e.target.value); setPage(1); }}
               >
@@ -152,12 +152,12 @@ const AdminCategories = () => {
                 <option value="name-asc">Name A→Z</option>
                 <option value="name-desc">Name Z→A</option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-secondary">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-secondary/60">
                 <ChevronDown className="h-4 w-4" />
               </div>
             </div>
             <button
-              className="border border-border px-3 py-2 rounded-xl bg-white hover:bg-gray-50 transition"
+              className="border border-border px-3 py-2 rounded-xl bg-surface hover:bg-surface-2 transition text-secondary"
               onClick={async () => {
                 setSearch('');
                 setSort('newest');
@@ -170,11 +170,11 @@ const AdminCategories = () => {
           </div>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading…</div>
+          <div className="p-6 text-center text-secondary/70">Loading…</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Image</th>
                 <th className="px-4 py-3 border-b border-border">Name</th>
                 <th className="px-4 py-3 border-b border-border w-32">Actions</th>
@@ -182,9 +182,9 @@ const AdminCategories = () => {
             </thead>
             <tbody>
               {items.map((c) => (
-                <tr key={c.CategoryID} className="border-b border-border">
+                <tr key={c.CategoryID} className="border-b border-border hover:bg-primary/5 transition">
                   <td className="px-4 py-3">
-                    <div className="h-8 w-8 rounded border border-border overflow-hidden bg-gray-50 flex-shrink-0">
+                    <div className="h-10 w-10 rounded border border-border overflow-hidden bg-surface-2 flex-shrink-0">
                       <ProductImage
                         src={c.ImageURL}
                         alt={c.CategoryName}
@@ -198,10 +198,18 @@ const AdminCategories = () => {
                   <td className="px-4 py-3 font-semibold text-secondary">{c.CategoryName}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <button className="p-2 rounded-xl border border-border hover:border-primary" onClick={() => openEdit(c)} title="Edit">
+                      <button
+                        className="p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
+                        onClick={() => openEdit(c)}
+                        title="Edit"
+                      >
                         <Pencil className="h-4 w-4" />
                       </button>
-                      <button className="p-2 rounded-xl border border-border text-secondary hover:border-primary transition" onClick={() => setConfirm(c)} title="Delete">
+                      <button
+                        className="p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
+                        onClick={() => setConfirm(c)}
+                        title="Delete"
+                      >
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -210,7 +218,7 @@ const AdminCategories = () => {
               ))}
               {items.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-10 text-center text-gray-500">No categories yet.</td>
+                  <td colSpan={3} className="px-4 py-10 text-center text-secondary/50">No categories found.</td>
                 </tr>
               )}
             </tbody>

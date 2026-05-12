@@ -51,7 +51,7 @@ const AdminLogin = () => {
       <div className="absolute inset-0 bg-hero-gradient opacity-80" />
 
       <div className="relative z-10 w-full max-w-md">
-        <div className="rf-card p-7 rf-soft-pop bg-white/90 backdrop-blur-md border border-white/30">
+        <div className="rf-card p-7 rf-soft-pop bg-surface/90 backdrop-blur-md border border-white/30">
           <div className="text-center">
             <div className="text-sm font-semibold tracking-wider text-secondary/80">VornLiving</div>
             <h1 className="text-2xl font-bold text-secondary mt-1">Admin Login</h1>
@@ -75,7 +75,7 @@ const AdminLogin = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="rf-input w-full text-secondary placeholder:text-secondary/70 bg-white"
+                className="rf-input w-full text-secondary placeholder:text-secondary/70 bg-surface"
                 placeholder="admin@example.com"
               />
             </div>
@@ -96,7 +96,7 @@ const AdminLogin = () => {
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="rf-input w-full text-secondary placeholder:text-secondary/40 text-center tracking-widest text-2xl bg-white"
+                className="rf-input w-full text-secondary placeholder:text-secondary/40 text-center tracking-widest text-2xl bg-surface"
                 placeholder="• • • •"
                 maxLength={4}
               />

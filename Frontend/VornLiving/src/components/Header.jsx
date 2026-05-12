@@ -259,12 +259,12 @@ const Header = () => {
                 <div className={[headerSurfaceClass, headerTextClass].join(' ')}>
                    
 
-                    <div className="container mx-auto py-4 flex justify-between items-center relative">
+                    <div className="container mx-auto py-0 flex justify-between items-center relative">
                         <Link to="/" className="flex items-center">
                             <img
-                                src="/logo/vorn-logo.svg"
+                                src={encodeURI('/logo/VORN LIVING FINAL LOGO-APR 6.png')}
                                 alt="Vorn Living"
-                                className="h-14 md:h-16 w-auto max-w-[200px] sm:max-w-[260px] md:max-w-[320px] object-contain"
+                                className="h-28 md:h-36 w-auto max-w-[400px] sm:max-w-[500px] md:max-w-[600px] object-contain -my-2"
                                 loading="eager"
                                 decoding="async"
                             />

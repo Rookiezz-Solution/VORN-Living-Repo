@@ -1,4 +1,4 @@
-const { getRequest } = require('../config/db');
+const { getRequest, sql } = require('../config/db');
 const { hasColumn } = require('../lib/dbSchema');
 
 const list = async (req, res) => {
@@ -80,7 +80,8 @@ const get = async (req, res) => {
   try {
     const id = req.params.id;
     const r = getRequest();
-    r.input('orderId', id);
+    const orderIdInt = parseInt(id, 10);
+    r.input('orderId', sql.Int, orderIdInt);
     const orderRes = await r.query(`
       SELECT o.*, COALESCE(u.Email, o.GuestEmail) AS UserEmail
       FROM Orders o
@@ -143,7 +144,7 @@ const updateStatus = async (req, res) => {
       return res.status(400).json({ message: 'Status not allowed by OrderStatus policy. Use the Returns workflow for replacements.' });
     }
     const r = getRequest();
-    r.input('orderId', id);
+    r.input('orderId', sql.Int, parseInt(id, 10));
     const curRes = await r.query(`SELECT TOP 1 OrderStatus FROM Orders WHERE OrderID = @orderId`);
     if (curRes.recordset.length === 0) return res.status(404).json({ message: 'Order not found' });
     const old = curRes.recordset[0].OrderStatus;
@@ -188,7 +189,7 @@ const updateTracking = async (req, res) => {
     const { carrier, trackingNumber, shippedAt } = req.body || {};
     if (!carrier || !trackingNumber) return res.status(400).json({ message: 'carrier and trackingNumber are required' });
     const r = getRequest();
-    r.input('orderId', id);
+    r.input('orderId', sql.Int, parseInt(id, 10));
     r.input('carrier', carrier);
     r.input('tracking', trackingNumber);
     r.input('shippedAt', shippedAt || new Date());
@@ -208,4 +209,23 @@ const updateTracking = async (req, res) => {
   }
 };
 
-module.exports = { list, get, updateStatus, updateTracking };
+const remove = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const r = getRequest();
+    r.input('orderId', sql.Int, parseInt(id, 10));
+    // Delete related records first due to FK constraints
+    await r.query(`
+      DELETE FROM Order_Items WHERE OrderID = @orderId;
+      DELETE FROM Order_Shipping_Details WHERE OrderID = @orderId;
+      DELETE FROM Order_Status_History WHERE OrderID = @orderId;
+      DELETE FROM Orders WHERE OrderID = @orderId;
+    `);
+    return res.json({ message: 'Order deleted successfully' });
+  } catch (e) {
+    console.error('Admin delete order error:', e);
+    return res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+module.exports = { list, get, updateStatus, updateTracking, remove };

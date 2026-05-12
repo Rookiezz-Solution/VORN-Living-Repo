@@ -84,7 +84,7 @@ const AdminReviews = () => {
         <h1 className="text-2xl font-bold">Product Reviews</h1>
       </div>
       {message && <div className="text-primary">{message}</div>}
-      <div className="rf-card overflow-hidden">
+      <div className="rf-card overflow-hidden bg-surface">
         <div className="p-4 border-b border-border flex items-center justify-between gap-3">
           <SearchField
             value={search}
@@ -97,7 +97,7 @@ const AdminReviews = () => {
             inputWidthClassName="w-80"
           />
           <button
-            className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-white hover:border-primary transition"
+            className="inline-flex items-center gap-2 border border-border rounded-xl px-3 py-2 bg-surface hover:bg-surface-2 transition text-secondary"
             onClick={async () => { setPage(1); await load({ page: 1 }); }}
             title="Apply"
           >
@@ -105,11 +105,11 @@ const AdminReviews = () => {
           </button>
         </div>
         {loading ? (
-          <div className="p-6 text-center text-gray-500">Loading…</div>
+          <div className="p-6 text-center text-secondary/70">Loading…</div>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-left text-gray-600">
+              <tr className="bg-surface-2 text-left text-secondary/70">
                 <th className="px-4 py-3 border-b border-border">Product</th>
                 <th className="px-4 py-3 border-b border-border">User</th>
                 <th className="px-4 py-3 border-b border-border">Rating</th>
@@ -119,22 +119,26 @@ const AdminReviews = () => {
             </thead>
             <tbody>
               {items.map(r => (
-                <tr key={r.ReviewID} className="border-b border-border hover:bg-primary/10">
-                  <td className="px-4 py-3">{r.ProductName}</td>
-                  <td className="px-4 py-3">{r.UserEmail || 'Guest'}</td>
-                  <td className="px-4 py-3">{r.Rating}★</td>
-                  <td className="px-4 py-3 truncate">{r.ReviewTitle || '—'}</td>
+                <tr key={r.ReviewID} className="border-b border-border hover:bg-primary/5 transition">
+                  <td className="px-4 py-3 text-secondary font-medium">{r.ProductName}</td>
+                  <td className="px-4 py-3 text-secondary/70">{r.UserEmail || 'Guest'}</td>
+                  <td className="px-4 py-3">
+                    <span className="inline-flex items-center gap-1 text-amber-500 font-bold">
+                      {r.Rating}★
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 truncate text-secondary/80">{r.ReviewTitle || '—'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        className="inline-flex p-2 rounded-xl border border-border hover:border-primary transition"
+                        className="inline-flex p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary"
                         title="View"
                         onClick={() => openDetail(r.ReviewID)}
                       >
                         <Eye className="h-4 w-4" />
                       </button>
-                      <button className="p-2 rounded-xl border border-border hover:border-primary transition disabled:opacity-60" onClick={() => openDeleteConfirm(r)} title="Delete" disabled={busy}>
+                      <button className="p-2 rounded-xl border border-border bg-surface hover:bg-surface-2 transition text-secondary disabled:opacity-60" onClick={() => openDeleteConfirm(r)} title="Delete" disabled={busy}>
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
@@ -142,7 +146,7 @@ const AdminReviews = () => {
                 </tr>
               ))}
               {items.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">No reviews.</td></tr>
+                <tr><td colSpan={5} className="px-4 py-10 text-center text-secondary/50">No reviews found.</td></tr>
               )}
             </tbody>
           </table>

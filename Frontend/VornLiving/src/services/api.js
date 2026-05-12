@@ -11,6 +11,7 @@ const api = axios.create({
   },
 });
 
+
 // Add interceptor to include User ID in headers and broadcast loading events
 api.interceptors.request.use((config) => {
   if (typeof window !== "undefined") {
@@ -924,6 +925,10 @@ export const adminUpdateOrderStatus = async (id, payload) => {
 };
 export const adminUpdateOrderTracking = async (id, payload) => {
   const response = await api.put(`/admin/orders/${id}/tracking`, payload);
+  return response.data;
+};
+export const adminDeleteOrder = async (id) => {
+  const response = await api.delete(`/admin/orders/${id}`);
   return response.data;
 };
 
